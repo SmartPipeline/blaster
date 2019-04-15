@@ -1,0 +1,38 @@
+#- Python binary type -+
+
+*.pyc
+untitled.py
+
+#- window database -+
+
+*.db
+
+
+#- Apple MacOS dataBase -+
+
+.DS_Store
+
+
+
+#- wing IDE project file -+
+
+*.wpr
+*.wpu
+
+
+
+#- pyCharm project file -+
+
+*.idea
+
+
+#- binary compile dir   -+
+
+**/build/
+**/dist/
+**/binary/
+processor.exe
+
+#- library
+
+**/libs/
