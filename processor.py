@@ -8,8 +8,11 @@ import sys, os, datetime, imp
 import subprocess
 from PIL import Image, ImageDraw, ImageFont
 import fire
+try:
+    Env = imp.load_source('Env', os.path.join(os.path.dirname(__file__), 'blasterEnv.py'))
+except:
+    Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 
 
 def draw_text(draw, pos, text, text_font):
