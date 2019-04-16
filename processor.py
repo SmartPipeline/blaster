@@ -14,7 +14,6 @@ except:
     Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
-
 def draw_text(draw, pos, text, text_font):
     '''
     '''
@@ -32,10 +31,10 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
     for img in images:
         #- make background
         foreground_image = Image.open(os.path.join(imageDir, img))
-        background_image = Image.new('RGB', (foreground_image.size[0], int(foreground_image.size[1] * 1.2)), Env.MASK_COLOR)
+        background_image = Image.new('RGB', (foreground_image.width, int(foreground_image.height * 1.2)), Env.MASK_COLOR)
 
         #- paste foreground
-        background_image.paste(foreground_image, (0, int(foreground_image.size[1] * 0.1)))
+        background_image.paste(foreground_image, (0, int(foreground_image.height * 0.1)))
 
         #- draw text
         text_font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE)
@@ -45,39 +44,39 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
         _text = 'Cam: {0}'.format(camera)
         camera_font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE * 2)
         text_size   = camera_font.getsize(_text)
-        _pos  = (Env.TEXT_BOUND, foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        _pos  = (Env.TEXT_BOUND, foreground_image.height * 0.05 - text_size[1] * 0.6)
         draw_text(background_draw, _pos, _text, camera_font)
 
         #- up - middle
-        #_text = '{0} x {1}'.format(foreground_image.size[0], foreground_image.size[1])
+        #_text = '{0} x {1}'.format(foreground_image.width, foreground_image.height)
         #text_size = text_font.getsize(_text)
-        #_pos = ((background_image.size[0] - text_size[0]) / 2, foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        #_pos = ((background_image.width - text_size[0]) / 2, foreground_image.height * 0.05 - text_size[1] * 0.6)
         #draw_text(background_draw, _pos, _text, text_font)
 
         #- up - right
         _text = 'Focal: {0}'.format(focal)
         text_size = text_font.getsize(_text)
-        _pos = (background_image.size[0] - text_size[0] - Env.TEXT_BOUND, foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        _pos = (background_image.width - text_size[0] - Env.TEXT_BOUND, foreground_image.height * 0.05 - text_size[1] * 0.6)
         draw_text(background_draw, _pos, _text, text_font)
 
         #- down - left
         _now = datetime.datetime.now()
         _text = 'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
         text_size = text_font.getsize(_text)
-        _pos = (Env.TEXT_BOUND, background_image.size[1] - foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        _pos = (Env.TEXT_BOUND, background_image.height - foreground_image.height * 0.05 - text_size[1] * 0.6)
         draw_text(background_draw, _pos, _text, text_font)
 
         #- down - middle
         _text = 'Atrist: {0}'.format(artist)
         text_size = text_font.getsize(_text)
-        _pos = ((background_image.size[0] - text_size[0]) / 2, background_image.size[1] - foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        _pos = ((background_image.width - text_size[0]) / 2, background_image.height - foreground_image.height * 0.05 - text_size[1] * 0.6)
         draw_text(background_draw, _pos, _text, text_font)
 
         #- down - right
         _text = 'Frame: {0:0>4}/{1:0>4}'.format(i, len(images) + start_frame - 1)
         framne_font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE * 2)
         text_size   = framne_font.getsize(_text)        
-        _pos = (background_image.size[0] - text_size[0] - Env.TEXT_BOUND, background_image.size[1] - foreground_image.size[1] * 0.05 - text_size[1] * 0.6)
+        _pos = (background_image.width - text_size[0] - Env.TEXT_BOUND, background_image.height - foreground_image.height * 0.05 - text_size[1] * 0.6)
         draw_text(background_draw, _pos, _text, framne_font)
         i += 1
 
