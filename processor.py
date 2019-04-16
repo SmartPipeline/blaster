@@ -82,6 +82,11 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
 
         #- save images
         background_image.save(os.path.join(imageDir, img))
+
+        #- close image
+        foreground_image.close()
+        background_image.close()
+
         sys.stdout.write('{0}\n'.format(img))
 
 
