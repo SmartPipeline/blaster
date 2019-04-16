@@ -100,7 +100,13 @@ def comp_to_video(image_sequence, output, audio=None, view_output=False):
     if audio and os.path.isfile(audio):
         sequence = '[ {0} {1} ]'.format(image_sequence, audio)
 
-    commands = [Env.RVIO_BIN, sequence, '-o {0}'.format(output) , '-outfps {0}'.format(Env.VIDEO_FPS) , '-codec {0}'.format(Env.VIDEO_CODEC), '-v']
+    commands = [Env.RVIO_BIN,
+                sequence,
+                '-o {0}'.format(output),
+                '-outfps {0}'.format(Env.VIDEO_FPS),
+                '-codec {0}'.format(Env.VIDEO_CODEC),
+                '-quality 1.0',
+                '-v']
     subprocess.check_call(' '.join(commands))
 
     #- view video
