@@ -6,6 +6,7 @@
 #========================================
 import sys, os, datetime, imp
 import subprocess
+import progressbar
 from PIL import Image, ImageDraw, ImageFont
 import fire
 try:
@@ -55,7 +56,7 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
 
     images = os.listdir(imageDir)
     frame  = start_frame
-    for img in images:
+    for img in progressbar.progressbar(images):
         #- make background
         mask_size = get_mask_size(os.path.join(imageDir, img))
         back_image = create_back_image(os.path.join(imageDir, img))
@@ -108,8 +109,6 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
         back_image.save(os.path.join(imageDir, img))
         back_image.close()
 
-        #- write output
-        sys.stdout.write('{0}\n'.format(img))
 
 
 
