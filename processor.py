@@ -13,6 +13,30 @@ try:
 except:
     Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+def get_mask_size(image):
+    '''
+    '''
+    base_image = Image.open(image)
+    size = base_image.width, base_image.height * Env.MASK_SCALE
+    base_image.close()
+
+    return size
+
+
+
+def create_back_image(image):
+    '''
+    '''
+    fore_image = Image.open(image)
+    mask_size  = get_mask_size(image)
+
+    back_image = Image.new('RGB', (fore_image.width, int(fore_image.height + mask_size[1]*2)), Env.MASK_COLOR)
+    back_image.paste(fore_image, (0, int(mask_size[1])))
+    fore_image.close()
+
+    return back_image
+
+
 
 def draw_text(image, pos, text, _font):
     '''
@@ -22,6 +46,7 @@ def draw_text(image, pos, text, _font):
     return True
 
 
+
 def add_text(imageDir, camera, focal, artist, start_frame=1):
     '''
     '''
@@ -29,34 +54,31 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
         return False
 
     images = os.listdir(imageDir)
-    i = start_frame
+    frame  = start_frame
     for img in images:
         #- make background
-        fore_image = Image.open(os.path.join(imageDir, img))
-        back_image = Image.new('RGB', (fore_image.width, int(fore_image.height * (1.0 + Env.MASK_SCALE*2))), Env.MASK_COLOR)
-
-        #- paste foreground
-        back_image.paste(fore_image, (0, int(fore_image.height * 0.1)))
+        mask_size = get_mask_size(os.path.join(imageDir, img))
+        back_image = create_back_image(os.path.join(imageDir, img))
 
         #- up - left
         _text = 'Cam: {0}'.format(camera)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UL)
         _size = _font.getsize(_text)
-        _pos  = (Env.TEXT_BOUND, fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
+        _pos  = (Env.TEXT_BOUND, mask_size[1]*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- up - middle
-        #_text = '{0} x {1}'.format(fore_image.width, fore_image.height)
-        #_font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UM)
-        #_size = _font.getsize(_text)
-        #_pos = ((back_image.width - _size[0]) / 2, fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
-        #draw_text(back_image, _pos, _text, _font)
+        # _text = '{0} x {1}'.format(fore_image.width, fore_image.height)
+        # _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UM)
+        # _size = _font.getsize(_text)
+        # _pos = ((back_image.width - _size[0]) / 2, mask_size[1]*0.5 - _size[1]*0.55)
+        # draw_text(back_image, _pos, _text, _font)
 
         #- up - right
         _text = 'Focal: {0}'.format(focal)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UR)
         _size = _font.getsize(_text)
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
+        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, mask_size[1]*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - left
@@ -64,31 +86,29 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
         _text = 'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DL)
         _size = _font.getsize(_text)
-        _pos = (Env.TEXT_BOUND, back_image.height - fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
+        _pos = (Env.TEXT_BOUND, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - middle
-        _text = 'Atrist: {0}'.format(artist)
+        _text = 'Artist: {0}'.format(artist)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DM)
         _size = _font.getsize(_text)
-        _pos = ((back_image.width - _size[0]) / 2, back_image.height - fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
+        _pos = ((back_image.width - _size[0]) / 2, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - right
-        _text = 'Frame: {0:0>4}/{1:0>4}'.format(i, len(images) + start_frame - 1)
+        _text = 'Frame: {0:0>4}/{1:0>4}'.format(frame, len(images) + start_frame - 1)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
         _size = _font.getsize(_text)        
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - fore_image.height * Env.MASK_SCALE * 0.5 - _size[1] * 0.55)
+        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
-        i += 1
+        frame += 1
 
         #- save images
         back_image.save(os.path.join(imageDir, img))
-
-        #- close image
-        fore_image.close()
         back_image.close()
 
+        #- write output
         sys.stdout.write('{0}\n'.format(img))
 
 
