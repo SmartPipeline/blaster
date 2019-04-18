@@ -122,11 +122,13 @@ def comp_to_video(image_sequence, output, audio=None, view_output=False):
 
     commands = [Env.RVIO_BIN,
                 sequence,
-                '-o {0}'.format(output),
                 '-outfps {0}'.format(Env.VIDEO_FPS),
                 '-codec {0}'.format(Env.VIDEO_CODEC),
+                '-outparams vcc:bf=0 vcc:b_pyramid=0',
                 '-quality 1.0',
+                '-o {0}'.format(output),
                 '-v']
+
     subprocess.check_call(' '.join(commands))
 
     #- view video
