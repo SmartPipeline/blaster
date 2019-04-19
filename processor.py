@@ -39,7 +39,7 @@ def create_back_image(image):
         back_height += 1
 
     back_image = Image.new('RGB', (back_width, back_height), Env.MASK_COLOR)
-    back_image.paste(fore_image, (0, int(mask_size[1])))
+    back_image.paste(fore_image, (0, int(mask_size[1] + 1)))
     fore_image.close()
 
     return back_image
