@@ -4,7 +4,7 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys, os, datetime, imp
+import sys, os, glob, datetime, imp
 import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
@@ -55,18 +55,15 @@ def draw_text(image, pos, text, _font):
 
 
 
-def add_text(imageDir, camera, focal, artist, start_frame=1):
+def add_text(image_pattrn, camera, focal, artist, start_frame=1):
     '''
     '''
-    if not os.path.isdir(imageDir):
-        return False
-
-    images = os.listdir(imageDir)
+    images = glob.glob(image_pattrn)
     frame  = start_frame
     for img in progressbar.progressbar(images):
         #- make background
-        mask_size = get_mask_size(os.path.join(imageDir, img))
-        back_image = create_back_image(os.path.join(imageDir, img))
+        mask_size = get_mask_size(img)
+        back_image = create_back_image(img)
 
         #- up - left
         _text = 'Cam: {0}'.format(camera)
@@ -113,30 +110,36 @@ def add_text(imageDir, camera, focal, artist, start_frame=1):
         frame += 1
 
         #- save images
-        back_image.save(os.path.join(imageDir, img))
+        back_image.save(img)
         back_image.close()
 
 
 
 
-def comp_to_video(image_sequence, output, audio=None, view_output=False):
+def comp_to_video(image_pattrn, output, audio=None, view_output=False):
     '''
     '''
-    sequence = image_sequence
+    sequence = image_pattrn
 
     if audio and os.path.isfile(audio):
-        sequence = '[ {0} {1} ]'.format(image_sequence, audio)
+        sequence = '[ {0} {1} ]'.format(image_pattrn, audio)
 
     commands = [Env.RVIO_BIN,
                 sequence,
                 '-outfps {0}'.format(Env.VIDEO_FPS),
                 '-codec {0}'.format(Env.VIDEO_CODEC),
-                '-outparams vcc:bf=0 vcc:b_pyramid=0',
+                '-outparams vcc:bf=0',
                 '-quality 1.0',
                 '-o {0}'.format(output),
                 '-v']
 
     subprocess.check_call(' '.join(commands))
+
+    #- auto delete images
+    if Env.AUTO_DELETE_IMAGE:
+        images = glob.glob(image_pattrn.replace('#', '*'))
+        for img in progressbar.progressbar(images):
+            os.remove(img)
 
     #- view video
     if view_output:

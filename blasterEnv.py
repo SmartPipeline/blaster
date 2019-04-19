@@ -5,7 +5,7 @@
 #========================================
 import os
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-IMAGE_PATH = os.path.expanduser('~/playblast/temp')
+IMAGE_PATH = os.path.expanduser('~/playblast')
 
 IMAGE_FMT  = 'tga'
 
@@ -50,3 +50,5 @@ TEXT_SIZE_DR = 50
 VIDEO_FPS  = 24
 
 VIDEO_CODEC = 'libx264'
+
+AUTO_DELETE_IMAGE = True
