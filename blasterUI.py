@@ -41,7 +41,8 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
     def on_let_output_textChanged(self, args=None):
         '''
         '''
-        self.on_cbx_updateversion_clicked(self.cbx_updateversion.isChecked())
+        if self.cbx_updateversion.isChecked():
+            self.on_cbx_updateversion_clicked(True)
 
 
     @QtCore.Slot(bool)
