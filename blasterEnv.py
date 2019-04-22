@@ -21,7 +21,7 @@ RV_BIN     = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rv.exe'
 
 
 
-MASK_SCALE = 0.1
+MASK_HEIGHT = 87
 
 MASK_COLOR = (0, 0, 0)
 

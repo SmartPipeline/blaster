@@ -18,7 +18,7 @@ def get_mask_size(image):
     '''
     '''
     base_image = Image.open(image)
-    size = base_image.width, base_image.height * Env.MASK_SCALE
+    size = base_image.width, Env.MASK_HEIGHT
     base_image.close()
 
     return size
@@ -31,7 +31,7 @@ def create_back_image(image):
     fore_image = Image.open(image)
     mask_size  = get_mask_size(image)
 
-    back_width, back_height = fore_image.width, int(fore_image.height + mask_size[1]*2)
+    back_width, back_height = fore_image.width, fore_image.height + mask_size[1]*2
     if back_width % 2 != 0:
         back_width += 1
 
