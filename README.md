@@ -6,7 +6,7 @@ Maya Playblast Tool
 ### 使用要求
 - 将程序包克隆到Maya可以导入位置。
 
-- 必须安装Shuotgun RV，`并且购买正版License`，并在`blasterEnv.py`里配置RV的路径。
+- 必须安装Shuotgun RV，并且`购买正版License`，并在`blasterEnv.py`里配置RV的路径。
 
 - 需要安装 `pillow` 和 `fire` 库。
 
