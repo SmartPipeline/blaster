@@ -49,11 +49,15 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
     def on_cbx_updateversion_clicked(self, args=None):
         '''
         '''
-        self.let_videoname.setText('{0}_V001.mov'.format(re.sub('_S\d{2}_', '_', blasterUtil.get_current_camera())))
+        cam = blasterUtil.get_current_camera()
+        if re.search('SC\d{2}_S\d{2}_', cam):
+            cam = re.sub('_S\d{2}_', '_', cam)
+
+        self.let_videoname.setText('{0}_V001.mov'.format(cam))
         if self.cbx_updateversion.isChecked():
             if not str(self.let_output.text()):
                 return
-            filePath = os.path.join(str(self.let_output.text()), '{0}_V001.mov'.format(re.sub('_S\d{2}_', '_', blasterUtil.get_current_camera())))
+            filePath = os.path.join(str(self.let_output.text()), '{0}_V001.mov'.format(cam))
             self.let_videoname.setText(os.path.basename(blasterUtil.get_next_version(filePath)))
 
 
