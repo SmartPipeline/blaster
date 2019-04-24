@@ -17,7 +17,7 @@ Maya Playblast Tool
 
 
 ### 调用方法
-```
+```python
 import blaster
 blaster.UI()
 ```
