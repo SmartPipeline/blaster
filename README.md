@@ -23,3 +23,6 @@ Maya Playblast Tool
 import blaster
 blaster.UI()
 ```
+
+### 示例
+![](https://github.com/SmartPipeline/blaster/blob/master/resource/temp/caixukun.0290.jpg)
