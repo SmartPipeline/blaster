@@ -124,7 +124,7 @@ def comp_to_video(image_pattrn, output, audio=None, view_output=False):
 
     #- auto delete images
     if Env.AUTO_DELETE_IMAGE:
-        images = glob.glob(image_pattrn.replace('#', '*'))
+        images = glob.glob(image_pattrn.replace('.#.', '.*.'))
         for img in progressbar.progressbar(images):
             os.remove(img)
 
