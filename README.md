@@ -8,12 +8,14 @@ Maya Playblast Tool
 
 - 必须安装Shuotgun RV，`并且购买正版License`。
 
+- 需要安装 `pillow` 和 `fire` 库。
+
 - 开发人员需要使用 `_Compile_Exe.cmd` `把processor 编译成exe然后放到生产环境`，
   避免每台电脑安装python 和 依赖库。
 
 - 生产环境内，`blasterEnv.py` 里的 第二个 `PROCESSOR`需要注释掉。
 
-- 需要安装 `pillow` 和 `fire` 库。
+
 
 
 ### 调用方法
