@@ -14,24 +14,12 @@ try:
 except:
     Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-def get_mask_size(image):
-    '''
-    '''
-    base_image = Image.open(image)
-    size = base_image.width, Env.MASK_HEIGHT
-    base_image.close()
-
-    return size
-
-
-
 def create_back_image(image):
     '''
     '''
     fore_image = Image.open(image)
-    mask_size  = get_mask_size(image)
 
-    back_width, back_height = fore_image.width, fore_image.height + mask_size[1]*2
+    back_width, back_height = fore_image.width, fore_image.height + Env.MASK_HEIGHT*2
     if back_width % 2 != 0:
         back_width += 1
 
@@ -39,7 +27,7 @@ def create_back_image(image):
         back_height += 1
 
     back_image = Image.new('RGB', (back_width, back_height), Env.MASK_COLOR)
-    back_image.paste(fore_image, (0, int(mask_size[1] + 1)))
+    back_image.paste(fore_image, (0, int(Env.MASK_HEIGHT + 1)))
     fore_image.close()
 
     return back_image
@@ -62,28 +50,27 @@ def add_text(image_pattrn, camera, focal, artist, start_frame=1):
     frame  = start_frame
     for img in progressbar.progressbar(images):
         #- make background
-        mask_size = get_mask_size(img)
         back_image = create_back_image(img)
 
         #- up - left
         _text = 'Cam: {0}'.format(camera)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UL)
         _size = _font.getsize(_text)
-        _pos  = (Env.TEXT_BOUND, mask_size[1]*0.5 - _size[1]*0.55)
+        _pos  = (Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- up - middle
         # _text = '{0} x {1}'.format(fore_image.width, fore_image.height)
         # _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UM)
         # _size = _font.getsize(_text)
-        # _pos = ((back_image.width - _size[0]) / 2, mask_size[1]*0.5 - _size[1]*0.55)
+        # _pos = ((back_image.width - _size[0]) / 2, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         # draw_text(back_image, _pos, _text, _font)
 
         #- up - right
         _text = 'Focal: {0}'.format(focal)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UR)
         _size = _font.getsize(_text)
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, mask_size[1]*0.5 - _size[1]*0.55)
+        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - left
@@ -91,21 +78,21 @@ def add_text(image_pattrn, camera, focal, artist, start_frame=1):
         _text = 'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DL)
         _size = _font.getsize(_text)
-        _pos = (Env.TEXT_BOUND, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
+        _pos = (Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - middle
         _text = 'Artist: {0}'.format(artist)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DM)
         _size = _font.getsize(_text)
-        _pos = ((back_image.width - _size[0]) / 2, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
+        _pos = ((back_image.width - _size[0]) / 2, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - right
         _text = 'Frame: {0:0>4}/{1:0>4}'.format(frame, len(images) + start_frame - 1)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
         _size = _font.getsize(_text)        
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - mask_size[1]*0.5 - _size[1]*0.55)
+        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
         frame += 1
 
