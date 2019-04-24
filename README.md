@@ -1,6 +1,6 @@
 Maya Playblast Tool
 ====
-此工具用来创建Maya拍屏视频
+blaster是一个用于Maya便捷自定义信息的拍屏工具
 
 
 ### 使用要求
