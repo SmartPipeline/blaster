@@ -6,7 +6,7 @@ blaster是一个用于Maya便捷自定义信息的拍屏工具
 ### 使用要求 Requirements
 - 将程序包克隆到Maya可以导入位置。
 
-- 必须安装Shotgun RV，并且`购买正版License`，并在`blasterEnv.py`里配置RV的路径。
+- 必须安装Shotgun RV，并且`购买正版License`，然后在`blasterEnv.py`里配置RV的路径。
 
 - 需要安装 `pillow` `progressbar2` `fire` `pyinstaller` 库。
 
