@@ -122,12 +122,6 @@ def comp_to_video(image_pattrn, output, audio=None, view_output=False):
 
     subprocess.check_call(' '.join(commands))
 
-    #- auto delete images
-    if Env.AUTO_DELETE_IMAGE:
-        images = glob.glob(image_pattrn.replace('.#.', '.*.'))
-        for img in progressbar.progressbar(images):
-            os.remove(img)
-
     #- view video
     if view_output:
         view_commands = [Env.RV_BIN, output]

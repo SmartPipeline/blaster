@@ -3,7 +3,7 @@
 #      mail: zclongpop123@163.com
 #      time: Fri Apr 12 13:41:08 2019
 #========================================
-import os, time, uuid, getpass, subprocess
+import os, time, uuid, glob, getpass, subprocess
 import maya.cmds as mc
 import maya.mel as mel
 import blasterEnv, blasterUtil
@@ -61,6 +61,12 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #-
     video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', '{0}.#.{1}'.format(blast_prefix, blasterEnv.IMAGE_FMT), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
-    subprocess.check_call(' '.join(video_process_cmds))    
+    subprocess.check_call(' '.join(video_process_cmds))
+
+    #- auto delete images
+    if blasterEnv.AUTO_DELETE_IMAGE:
+        images = glob.glob('{0}.*.{1}'.format(blast_prefix, blasterEnv.IMAGE_FMT))
+        for img in images:
+            os.remove(img)    
 
     return True    
