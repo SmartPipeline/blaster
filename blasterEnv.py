@@ -5,19 +5,19 @@
 #========================================
 import os
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-IMAGE_PATH = os.path.expanduser('~/playblast')
+BLAST_IMAGE_DIR = os.path.expanduser('~/playblast')
 
-IMAGE_FMT  = 'tga'
+BLAST_IMAGE_FMT = 'tga'
 
 
 
-PROCESSOR  = os.path.join(os.path.dirname(__file__), 'processor.exe')
+PROCESSOR = os.path.join(os.path.dirname(__file__), 'processor.exe')
 
-PROCESSOR  = 'C:/Python27/python.exe {0}'.format(os.path.join(os.path.dirname(__file__), 'processor.py'))
+PROCESSOR = 'C:/Python27/python.exe {0}'.format(os.path.join(os.path.dirname(__file__), 'processor.py'))
 
-RVIO_BIN   = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rvio_hw.exe'
+RVIO_BIN  = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rvio_hw.exe'
 
-RV_BIN     = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rv.exe'
+RV_BIN    = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rv.exe'
 
 
 

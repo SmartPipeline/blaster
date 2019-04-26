@@ -12,8 +12,8 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     '''
     '''
     # - make blast image dir  | Exp: C:/Users/zangchanglong/Documents/playblast
-    if not os.path.isdir(blasterEnv.IMAGE_PATH):
-        os.makedirs(blasterEnv.IMAGE_PATH)
+    if not os.path.isdir(blasterEnv.BLAST_IMAGE_DIR):
+        os.makedirs(blasterEnv.BLAST_IMAGE_DIR)
 
     #- close all camera gate
     for cam in mc.ls(typ='camera'):
@@ -25,9 +25,9 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if end_frame is None:
         end_frame = mc.playbackOptions(q=True, aet=True)
 
-    blast_prefix = os.path.join(blasterEnv.IMAGE_PATH, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[:8].upper()))
+    BLAST_PREFIX = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[:8].upper()))
     mc.playblast(fmt='image',
-                 compression = blasterEnv.IMAGE_FMT,
+                 compression = blasterEnv.BLAST_IMAGE_FMT,
 
                  fp=4,
                  percent = 100,
@@ -42,7 +42,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  width = mc.getAttr('defaultResolution.width'),
                  height = mc.getAttr('defaultResolution.height'),
 
-                 filename = blast_prefix)
+                 filename = BLAST_PREFIX)
 
     #-
     camera = blasterUtil.get_current_camera()
@@ -56,16 +56,16 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         sound_file = mc.sound(sound_node, q=True, f=True)
 
     #-
-    text_process_cmds = [blasterEnv.PROCESSOR, 'add_text', '{0}.*.{1}'.format(blast_prefix, blasterEnv.IMAGE_FMT), camera, focal, artist, str(int(start_frame))]
+    text_process_cmds = [blasterEnv.PROCESSOR, 'add_text', '{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT), camera, focal, artist, str(int(start_frame))]
     subprocess.check_call(' '.join(text_process_cmds))
 
     #-
-    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', '{0}.#.{1}'.format(blast_prefix, blasterEnv.IMAGE_FMT), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
+    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', '{0}.#.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
     subprocess.check_call(' '.join(video_process_cmds))
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:
-        images = glob.glob('{0}.*.{1}'.format(blast_prefix, blasterEnv.IMAGE_FMT))
+        images = glob.glob('{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT))
         for img in images:
             os.remove(img)    
 
