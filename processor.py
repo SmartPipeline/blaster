@@ -115,6 +115,8 @@ def comp_to_video(image_pattrn, output, audio=None, view_output=False):
                 '-outparams vcc:bf=0',
                 '-quality 1.0',
                 '-o {0}'.format(output),
+                '-rthreads {0}'.format(Env.RV_R_THREADING),
+                '-wthreads {0}'.format(Env.RV_W_TRHEADING),
                 '-v']
 
     subprocess.check_call(' '.join(commands))
