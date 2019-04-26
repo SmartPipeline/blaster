@@ -4,7 +4,7 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys, os, glob, datetime, imp
+import sys, os, imp, math, datetime, glob
 import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
@@ -20,11 +20,8 @@ def create_back_image(image):
     fore_image = Image.open(image)
 
     back_width, back_height = fore_image.width, fore_image.height + Env.MASK_HEIGHT*2
-    if back_width % 2 != 0:
-        back_width += 1
-
-    if back_height % 2 != 0:
-        back_height += 1
+    back_width  = int(math.ceil(back_width  / 2.0) * 2)
+    back_height = int(math.ceil(back_height / 2.0) * 2)
 
     back_image = Image.new('RGB', (back_width, back_height), Env.MASK_COLOR)
     back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, int(Env.MASK_HEIGHT + 1)))
