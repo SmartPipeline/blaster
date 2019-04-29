@@ -77,8 +77,14 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
         if self.cbx_updateversion.isChecked():
             self.on_cbx_updateversion_clicked(True)
 
+        start_frame = None
+        end_frame   = None
+        if self.rdn_frameByInput.isChecked():
+            start_frame = self.spx_startFrame.value()
+            end_frame   = self.spx_endFrame.value()
+
         output = os.path.join(str(self.let_output.text().encode('utf-8')), str(self.let_videoname.text().encode('utf-8')))
-        blasterCore.playblast(output, artist=str(self.let_artist.text()), view=self.cbx_viewoutput.isChecked())
+        blasterCore.playblast(output, start_frame, end_frame, artist=str(self.let_artist.text()), view=self.cbx_viewoutput.isChecked())
 
 
 
