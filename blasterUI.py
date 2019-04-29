@@ -30,12 +30,11 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
         self.setupUi(self)
         #-
         self.let_artist.setText(getpass.getuser())
-        self.on_cbx_updateversion_clicked(self.cbx_updateversion.isChecked())
 
-        #-
         if mc.optionVar(ex=self.blast_dir_path):
             self.let_output.setText(mc.optionVar(q=self.blast_dir_path))
 
+        self.on_cbx_updateversion_clicked(self.cbx_updateversion.isChecked())
 
 
     def showEvent(self, event):
