@@ -21,6 +21,8 @@ def get_maya_window():
 class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
     '''
     '''
+    blast_dir_path = 'BlastDirPath'
+
     def __init__(self, parent=get_maya_window()):
         '''
         '''
@@ -30,11 +32,17 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
         self.let_artist.setText(getpass.getuser())
         self.on_cbx_updateversion_clicked(self.cbx_updateversion.isChecked())
 
+        #-
+        if mc.optionVar(ex=self.blast_dir_path):
+            self.let_output.setText(mc.optionVar(q=self.blast_dir_path))
+
+
 
     def showEvent(self, event):
         '''
         '''
         self.on_cbx_updateversion_clicked(self.cbx_updateversion.isChecked())
+
 
 
     @QtCore.Slot(str)
@@ -43,6 +51,9 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
         '''
         if self.cbx_updateversion.isChecked():
             self.on_cbx_updateversion_clicked(True)
+
+        mc.optionVar(sv=(self.blast_dir_path, self.let_output.text()))
+
 
 
     @QtCore.Slot(bool)
