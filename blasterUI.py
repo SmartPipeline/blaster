@@ -58,7 +58,7 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
             if not str(self.let_output.text().encode('utf-8')):
                 return
             filePath = os.path.join(str(self.let_output.text().encode('utf-8')), '{0}_V001.mov'.format(cam))
-            self.let_videoname.setText(os.path.basename(blasterUtil.get_next_version(filePath)))
+            self.let_videoname.setText(os.path.basename(blasterUtil.get_next_version(filePath.decode('utf-8'))))
 
 
     @QtCore.Slot(bool)
