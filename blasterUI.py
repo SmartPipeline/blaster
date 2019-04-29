@@ -55,9 +55,9 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
 
         self.let_videoname.setText('{0}_V001.mov'.format(cam))
         if self.cbx_updateversion.isChecked():
-            if not str(self.let_output.text()):
+            if not str(self.let_output.text().encode('utf-8')):
                 return
-            filePath = os.path.join(str(self.let_output.text()), '{0}_V001.mov'.format(cam))
+            filePath = os.path.join(str(self.let_output.text().encode('utf-8')), '{0}_V001.mov'.format(cam))
             self.let_videoname.setText(os.path.basename(blasterUtil.get_next_version(filePath)))
 
 
@@ -77,7 +77,7 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
         if self.cbx_updateversion.isChecked():
             self.on_cbx_updateversion_clicked(True)
 
-        output = os.path.join(str(self.let_output.text()), str(self.let_videoname.text()))
+        output = os.path.join(str(self.let_output.text().encode('utf-8')), str(self.let_videoname.text().encode('utf-8')))
         blasterCore.playblast(output, artist=str(self.let_artist.text()), view=self.cbx_viewoutput.isChecked())
 
 
