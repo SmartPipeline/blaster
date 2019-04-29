@@ -43,6 +43,10 @@ def draw_text(image, pos, text, _font):
 def add_text(image_pattrn, camera, focal, artist, start_frame=1):
     '''
     '''
+    with open(Env.MOTD_FILE, 'r') as f:
+        sys.stdout.write(f.read().decode('utf-8'))
+    sys.stdout.write('\n')
+
     images = glob.glob(image_pattrn)
     frame  = start_frame
     for img in progressbar.progressbar(images):
@@ -103,8 +107,11 @@ def add_text(image_pattrn, camera, focal, artist, start_frame=1):
 def comp_to_video(image_pattrn, output, audio=None, view_output=False):
     '''
     '''
-    sequence = image_pattrn
+    with open(Env.MOTD_FILE, 'r') as f:
+        sys.stdout.write(f.read().decode('utf-8'))
+    sys.stdout.write('\n')
 
+    sequence = image_pattrn
     if audio and os.path.isfile(audio):
         sequence = '[ {0} {1} ]'.format(image_pattrn, audio)
 

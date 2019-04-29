@@ -47,6 +47,8 @@ TEXT_SIZE_DR = 50
 
 
 
+MOTD_FILE  = os.path.join(os.path.dirname(__file__), 'resource', 'motd', 'Buddha')
+
 VIDEO_FPS  = 24
 
 VIDEO_CODEC = 'libx264'
