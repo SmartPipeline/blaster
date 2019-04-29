@@ -46,4 +46,4 @@ def get_next_version(filePath):
 
     new_file_path = '{0}{1}'.format(fname.encode('utf-8'), fextension)
 
-    return get_next_version(new_file_path)
+    return get_next_version(new_file_path.decode('utf-8'))
