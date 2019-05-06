@@ -24,7 +24,7 @@ def create_back_image(image):
     back_height = int(math.ceil(back_height / 2.0) * 2)
 
     back_image = Image.new('RGB', (back_width, back_height), Env.MASK_COLOR)
-    back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, int(Env.MASK_HEIGHT + 1)))
+    back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, Env.MASK_HEIGHT))
     fore_image.close()
 
     return back_image
