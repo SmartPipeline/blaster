@@ -98,7 +98,7 @@ def add_text(image_pattrn, camera, focal, artist):
         #- down - right
         curt_frame = re.search('\.\d+\.', os.path.basename(img)).group()[1:-1]
         last_frame = re.search('\.\d+\.', os.path.basename(images[-1])).group()[1:-1]
-        _text = 'Frame: {0:0>4}/{1:0>4}'.format(curt_frame, last_frame)
+        _text = 'Frame: {0}/{1}'.format(curt_frame, last_frame)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
         _size = _font.getsize(_text)        
         _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)

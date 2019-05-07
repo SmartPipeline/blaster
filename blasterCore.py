@@ -5,6 +5,7 @@
 #========================================
 import os
 import time
+import math
 import uuid
 import glob
 import getpass
@@ -30,11 +31,11 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if end_frame is None:
         end_frame = mc.playbackOptions(q=True, aet=True)
 
-    BLAST_PREFIX = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
+    BLAST_PREFIX  = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
+    FRAME_PADDING = int(math.ceil(math.log(max(start_frame, end_frame)+1, 10)))
     mc.playblast(fmt='image',
                  compression = blasterEnv.BLAST_IMAGE_FMT,
 
-                 fp=4,
                  percent = 100,
                  quality = 100,
                  viewer = False,
@@ -43,6 +44,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
                  startTime = start_frame,
                  endTime = end_frame,
+                 framePadding = FRAME_PADDING,
 
                  width = mc.getAttr('defaultResolution.width'),
                  height = mc.getAttr('defaultResolution.height'),
@@ -66,7 +68,8 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     subprocess.check_call(' '.join(text_process_cmds))
 
     #- comp images to video
-    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('.*.', '.#.'), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
+    rvio_image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '@'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)    
+    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', rvio_image_pattern, '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
     subprocess.check_call(' '.join(video_process_cmds))
 
     #- auto delete images
