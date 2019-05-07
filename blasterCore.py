@@ -3,7 +3,12 @@
 #      mail: zclongpop123@163.com
 #      time: Fri Apr 12 13:41:08 2019
 #========================================
-import os, time, uuid, glob, getpass, subprocess
+import os
+import time
+import uuid
+import glob
+import getpass
+import subprocess
 import maya.cmds as mc
 import maya.mel as mel
 import blasterEnv, blasterUtil
@@ -25,7 +30,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if end_frame is None:
         end_frame = mc.playbackOptions(q=True, aet=True)
 
-    BLAST_PREFIX = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[:8].upper()))
+    BLAST_PREFIX = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
     mc.playblast(fmt='image',
                  compression = blasterEnv.BLAST_IMAGE_FMT,
 
