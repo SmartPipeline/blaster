@@ -111,7 +111,7 @@ def add_text(image_pattrn, camera, focal, artist):
 
 
 
-def comp_to_video(image_pattrn, output, audio=None, view_output=False):
+def comp_to_video(image_pattrn, output, audio=None):
     '''
     '''
     with open(Env.MOTD_FILE, 'r') as f:
@@ -134,11 +134,6 @@ def comp_to_video(image_pattrn, output, audio=None, view_output=False):
                 '-v']
 
     subprocess.check_call(' '.join(commands))
-
-    #- view video
-    if view_output:
-        view_commands = [Env.RV_BIN, output]
-        subprocess.Popen(' '.join(view_commands))
 
 
 

@@ -69,13 +69,18 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if sound_node:
         sound_file = mc.sound(sound_node, q=True, f=True)
 
-    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('?', '@'), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
+    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('?', '@'), '--output {0}'.format(output), '--audio {0}'.format(sound_file)]
     subprocess.check_call(' '.join(video_process_cmds))
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:
         images = glob.glob(image_path_pattern)
         for img in images:
-            os.remove(img)    
+            os.remove(img)
+
+    #- view output
+    if view:
+        rv_view_cmds = [blasterEnv.RV_BIN, output]
+        subprocess.Popen(' '.join(rv_view_cmds))
 
     return True    
