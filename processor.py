@@ -4,7 +4,7 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys, os, imp, math, datetime, glob
+import sys, os, re, imp, math, datetime, glob
 import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
@@ -40,7 +40,7 @@ def draw_text(image, pos, text, _font):
 
 
 
-def add_text(image_pattrn, camera, focal, artist, start_frame=1):
+def add_text(image_pattrn, camera, focal, artist):
     '''
     '''
     with open(Env.MOTD_FILE, 'r') as f:
@@ -48,7 +48,6 @@ def add_text(image_pattrn, camera, focal, artist, start_frame=1):
     sys.stdout.write('\n')
 
     images = glob.glob(image_pattrn)
-    frame  = start_frame
     for img in progressbar.progressbar(images):
         #- make background
         back_image = create_back_image(img)
@@ -90,12 +89,13 @@ def add_text(image_pattrn, camera, focal, artist, start_frame=1):
         draw_text(back_image, _pos, _text, _font)
 
         #- down - right
-        _text = 'Frame: {0:0>4}/{1:0>4}'.format(frame, len(images) + start_frame - 1)
+        curt_frame = re.search('\.\d+\.', os.path.basename(img)).group()[1:-1]
+        last_frame = re.search('\.\d+\.', os.path.basename(images[-1])).group()[1:-1]
+        _text = 'Frame: {0:0>4}/{1:0>4}'.format(curt_frame, last_frame)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
         _size = _font.getsize(_text)        
         _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
-        frame += 1
 
         #- save images
         back_image.save(img)

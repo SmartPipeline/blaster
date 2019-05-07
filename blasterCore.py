@@ -55,17 +55,18 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if sound_node:
         sound_file = mc.sound(sound_node, q=True, f=True)
 
-    #-
-    text_process_cmds = [blasterEnv.PROCESSOR, 'add_text', '{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT), camera, focal, artist, str(int(start_frame))]
+    #- add mask and text
+    image_path_pattern = '{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT)
+    text_process_cmds  = [blasterEnv.PROCESSOR, 'add_text', image_path_pattern, camera, focal, artist]
     subprocess.check_call(' '.join(text_process_cmds))
 
-    #-
-    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', '{0}.#.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
+    #- comp images to video
+    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('.*.', '.#.'), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
     subprocess.check_call(' '.join(video_process_cmds))
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:
-        images = glob.glob('{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT))
+        images = glob.glob(image_path_pattern)
         for img in images:
             os.remove(img)    
 
