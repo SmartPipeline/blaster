@@ -4,14 +4,21 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys, os, re, imp, math, datetime, glob
+import sys
+import os
+import re
+import imp
+import math
+import datetime
+import glob
+import fire
 import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
-import fire
-try:
+
+if os.path.basename(sys.executable) == 'python.exe':
     Env = imp.load_source('Env', os.path.join(os.path.dirname(__file__), 'blasterEnv.py'))
-except:
+else:
     Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 def create_back_image(image):
