@@ -111,34 +111,7 @@ def add_text(image_pattrn, camera, focal, artist):
 
 
 
-def comp_to_video(image_pattrn, output, audio=None):
-    '''
-    '''
-    with open(Env.MOTD_FILE, 'r') as f:
-        sys.stdout.write(f.read().decode('utf-8'))
-    sys.stdout.write('\n')
-
-    sequence = image_pattrn
-    if audio and os.path.isfile(audio):
-        sequence = '[ {0} {1} ]'.format(image_pattrn, audio)
-
-    commands = [Env.RVIO_BIN,
-                sequence,
-                '-outfps {0}'.format(Env.VIDEO_FPS),
-                '-codec {0}'.format(Env.VIDEO_CODEC),
-                '-outparams vcc:bf=0',
-                '-quality 1.0',
-                '-o {0}'.format(output),
-                '-rthreads {0}'.format(Env.RV_R_THREADING),
-                '-wthreads {0}'.format(Env.RV_W_TRHEADING),
-                '-v']
-
-    subprocess.check_call(' '.join(commands))
-
-
-
 if __name__ == '__main__':
     fire.Fire({
         'add_text': add_text,
-        'comp_to_video': comp_to_video
     })
