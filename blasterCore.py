@@ -41,6 +41,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  viewer = False,
                  clearCache = True,
                  showOrnaments = False,
+                 offScreen = True,
 
                  startTime = start_frame,
                  endTime = end_frame,
@@ -51,23 +52,23 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
                  filename = BLAST_PREFIX)
 
-    #-
+
+    #- add mask and text
     camera = blasterUtil.get_current_camera()
     focal  = str(mc.getAttr('{0}.focalLength'.format(camera)))
     if not artist:
         artist = getpass.getuser()
 
-    sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
-    sound_file = 'audio.wav'
-    if sound_node:
-        sound_file = mc.sound(sound_node, q=True, f=True)
-
-    #- add mask and text
     image_path_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
     text_process_cmds  = [blasterEnv.PROCESSOR, 'add_text', image_path_pattern, camera, focal, artist]
     subprocess.check_call(' '.join(text_process_cmds))
 
     #- comp images to video
+    sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
+    sound_file = 'audio.wav'
+    if sound_node:
+        sound_file = mc.sound(sound_node, q=True, f=True)
+
     video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('?', '@'), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
     subprocess.check_call(' '.join(video_process_cmds))
 
