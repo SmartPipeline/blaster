@@ -33,24 +33,24 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     BLAST_PREFIX  = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
     FRAME_PADDING = int(math.ceil(math.log(max(start_frame, end_frame)+1, 10)))
-    mc.playblast(fmt='image',
+    mc.playblast(filename = BLAST_PREFIX,
+                 fmt = 'image',
                  compression = blasterEnv.BLAST_IMAGE_FMT,
 
-                 percent = 100,
-                 quality = 100,
-                 viewer = False,
-                 clearCache = True,
-                 showOrnaments = False,
-                 offScreen = True,
+                 width = mc.getAttr('defaultResolution.width'),
+                 height = mc.getAttr('defaultResolution.height'),
 
                  startTime = start_frame,
                  endTime = end_frame,
                  framePadding = FRAME_PADDING,
 
-                 width = mc.getAttr('defaultResolution.width'),
-                 height = mc.getAttr('defaultResolution.height'),
+                 percent = 100,
+                 quality = 100,
 
-                 filename = BLAST_PREFIX)
+                 viewer = False,
+                 clearCache = True,
+                 showOrnaments = False,
+                 offScreen = True)
 
 
     #- add mask and text

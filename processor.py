@@ -12,7 +12,6 @@ import math
 import datetime
 import glob
 import fire
-import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
 
