@@ -107,3 +107,5 @@ def UI():
 
     wnd = BlasterUI()
     wnd.show()
+    
+    return wnd
