@@ -63,13 +63,12 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         sound_file = mc.sound(sound_node, q=True, f=True)
 
     #- add mask and text
-    image_path_pattern = '{0}.*.{1}'.format(BLAST_PREFIX, blasterEnv.BLAST_IMAGE_FMT)
+    image_path_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
     text_process_cmds  = [blasterEnv.PROCESSOR, 'add_text', image_path_pattern, camera, focal, artist]
     subprocess.check_call(' '.join(text_process_cmds))
 
     #- comp images to video
-    rvio_image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '@'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)    
-    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', rvio_image_pattern, '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
+    video_process_cmds = [blasterEnv.PROCESSOR, 'comp_to_video', image_path_pattern.replace('?', '@'), '--output {0}'.format(output), '--audio {0}'.format(sound_file), '--view-output {0}'.format(int(view))]
     subprocess.check_call(' '.join(video_process_cmds))
 
     #- auto delete images
