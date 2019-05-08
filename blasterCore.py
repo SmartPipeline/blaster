@@ -53,38 +53,27 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  offScreen = True)
 
 
-    #- add mask and text
     camera = blasterUtil.get_current_camera()
     focal  = str(mc.getAttr('{0}.focalLength'.format(camera)))
     if not artist:
         artist = getpass.getuser()
 
-    image_path_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
-    text_process_cmds  = [blasterEnv.PROCESSOR, 'add_text', image_path_pattern, camera, focal, artist]
-    subprocess.check_call(' '.join(text_process_cmds))
-
-    #- comp images to video
     sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
     sound_file = 'audio.wav'
     if sound_node:
         sound_file = mc.sound(sound_node, q=True, f=True)
 
-    sequence = image_path_pattern.replace('?', '@')
-    if os.path.isfile(sound_file):
-        sequence = '[ {0} {1} ]'.format(sequence, sound_file)
+    image_path_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
+    text_process_cmds  = [blasterEnv.PROCESSOR,
+                          'comp_blast_video',
+                          image_path_pattern,
+                          output.decode('utf-8'),
+                          camera.decode('utf-8'),
+                          focal.decode('utf-8'),
+                          artist.decode('utf-8'),
+                          sound_file.decode('utf-8')]
 
-    rvio_cmds = [blasterEnv.RVIO_BIN,
-                 sequence,
-                 '-outfps {0}'.format(blasterEnv.VIDEO_FPS),
-                 '-codec {0}'.format(blasterEnv.VIDEO_CODEC),
-                 '-outparams vcc:bf=0',
-                 '-quality 1.0',
-                 '-o {0}'.format(output),
-                 '-rthreads {0}'.format(blasterEnv.RV_R_THREADING),
-                 '-wthreads {0}'.format(blasterEnv.RV_W_TRHEADING),
-                 '-v']    
-
-    subprocess.check_call(' '.join(rvio_cmds))
+    subprocess.check_call(' '.join(text_process_cmds).encode('utf-8'))
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:

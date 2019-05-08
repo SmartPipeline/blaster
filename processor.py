@@ -12,6 +12,7 @@ import math
 import datetime
 import glob
 import fire
+import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
 
@@ -46,14 +47,10 @@ def draw_text(image, pos, text, _font):
 
 
 
-def add_text(image_pattrn, camera, focal, artist):
+def comp_images(image_pattern, camera, focal, artist):
     '''
     '''
-    with open(Env.MOTD_FILE, 'r') as f:
-        sys.stdout.write(f.read().decode('utf-8'))
-    sys.stdout.write('\n')
-
-    images = glob.glob(image_pattrn)
+    images = glob.glob(image_pattern)
     for img in progressbar.progressbar(images):
         #- make background
         back_image = create_back_image(img)
@@ -110,7 +107,44 @@ def add_text(image_pattrn, camera, focal, artist):
 
 
 
+def comp_video(image_pattern, output, audio=None):
+    '''
+    '''
+    sequence = image_pattern
+    if audio and os.path.isfile(audio):
+        sequence = '[ {0} {1} ]'.format(image_pattern, audio)
+
+    commands = [Env.RVIO_BIN,
+                sequence,
+                '-outfps {0}'.format(Env.VIDEO_FPS),
+                '-codec {0}'.format(Env.VIDEO_CODEC),
+                '-outparams vcc:bf=0',
+                '-quality 1.0',
+                '-o {0}'.format(output),
+                '-rthreads {0}'.format(Env.RV_R_THREADING),
+                '-wthreads {0}'.format(Env.RV_W_TRHEADING),
+                '-v']
+
+    subprocess.check_call(' '.join(commands))
+
+
+
+
+def comp_blast_video(image_pattern, video_path, camera, focal, artist, audio):
+    '''
+    '''
+    with open(Env.MOTD_FILE, 'r') as f:
+        sys.stdout.write(f.read().decode('utf-8'))
+    sys.stdout.write('\n')
+
+    comp_images(image_pattern, camera, focal, artist)
+    comp_video(image_pattern.replace('?', '@'), video_path, audio)
+
+
+
 if __name__ == '__main__':
     fire.Fire({
-        'add_text': add_text,
+        'comp_images': comp_images,
+        'comp_video': comp_video,
+        'comp_blast_video': comp_blast_video
     })
