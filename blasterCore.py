@@ -68,9 +68,9 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                           'comp_blast_video',
                           image_path_pattern,
                           output.decode('utf-8'),
-                          camera.decode('utf-8'),
-                          focal.decode('utf-8'),
-                          artist.decode('utf-8'),
+                          str(camera),
+                          str(focal),
+                          str(artist),
                           sound_file.decode('utf-8')]
 
     subprocess.check_call(' '.join(text_process_cmds).encode('utf-8'))
