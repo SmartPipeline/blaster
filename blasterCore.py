@@ -1,3 +1,4 @@
+# coding: utf-8
 #========================================
 #    author: Changlong.Zang
 #      mail: zclongpop123@163.com
@@ -8,6 +9,7 @@ import time
 import math
 import uuid
 import glob
+import json
 import getpass
 import subprocess
 import maya.cmds as mc
@@ -25,12 +27,14 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     for cam in mc.ls(typ='camera'):
         mc.camera(cam, e=True, displayFilmGate=False, displayResolution=False, overscan=1.0)
 
+    #- get time range
     if start_frame is None:
         start_frame = mc.playbackOptions(q=True, ast=True)
 
     if end_frame is None:
         end_frame = mc.playbackOptions(q=True, aet=True)
 
+    #- playblast images
     BLAST_PREFIX  = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
     FRAME_PADDING = int(math.ceil(math.log(max(start_frame, end_frame)+1, 10)))
     mc.playblast(filename = BLAST_PREFIX,
@@ -48,32 +52,39 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  quality = 100,
 
                  viewer = False,
+                 offScreen = True,
                  clearCache = True,
-                 showOrnaments = False,
-                 offScreen = True)
+                 showOrnaments = False)
 
-
+    #- getting infomation
+    image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
     camera = blasterUtil.get_current_camera()
     focal  = mc.getAttr('{0}.focalLength'.format(camera))
     if not artist:
         artist = getpass.getuser()
-
     sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
     sound_file = 'audio.wav'
     if sound_node:
         sound_file = mc.sound(sound_node, q=True, f=True)
 
-    image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
-    text_process_cmds  = [blasterEnv.PROCESSOR,
-                          'comp_blast_video',
-                          image_pattern,
-                          output.decode('utf-8'),
-                          str(camera),
-                          str(focal),
-                          str(artist),
-                          sound_file.decode('utf-8')]
+    #- create job-file
+    info_data = {
+        'ImagePattern': os.path.normpath(image_pattern),
+        'Camera': str(camera),
+        'Focal': str(focal),
+        'Audio': os.path.normpath(sound_file),
+        'Output': output,
+        'Artist': artist
+    }
+    info_file = '{0}.json'.format(BLAST_PREFIX)
+    with open(info_file, 'w') as f:
+        json.dump(info_data, f, indent=4)
 
-    subprocess.check_call(' '.join(text_process_cmds).encode('utf-8'))
+    #- call comp process
+    comp_process_cmds  = [blasterEnv.PROCESSOR,
+                          'comp_blast_video',
+                          info_file]
+    subprocess.check_call(' '.join(comp_process_cmds).encode('utf-8'))
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:
@@ -81,9 +92,13 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         for img in images:
             os.remove(img)
 
+    #- delete job file
+    if os.path.isfile(info_file):
+        os.remove(info_file)
+
     #- view output
     if view:
-        rv_view_cmds = [blasterEnv.RV_BIN, output]
+        rv_view_cmds = [blasterEnv.RV_BIN, output.encode('utf-8')]
         subprocess.Popen(' '.join(rv_view_cmds))
 
     return True    

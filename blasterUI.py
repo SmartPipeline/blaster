@@ -93,8 +93,8 @@ class BlasterUI(QtWidgets.QMainWindow, blasterQt.Ui_BLASTER_WINDOW):
             start_frame = self.spx_startFrame.value()
             end_frame   = self.spx_endFrame.value()
 
-        output = os.path.join(str(self.let_output.text().encode('utf-8')), str(self.let_videoname.text().encode('utf-8')))
-        blasterCore.playblast(output, start_frame, end_frame, artist=str(self.let_artist.text()), view=self.cbx_viewoutput.isChecked())
+        output = os.path.join(u'{0}'.format(self.let_output.text()), u'{0}'.format(self.let_videoname.text()))
+        blasterCore.playblast(output, start_frame, end_frame, u'{0}'.format(self.let_artist.text()), self.cbx_viewoutput.isChecked())
 
 
 
@@ -107,5 +107,5 @@ def UI():
 
     wnd = BlasterUI()
     wnd.show()
-    
+
     return wnd

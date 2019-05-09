@@ -8,10 +8,11 @@ import sys
 import os
 import re
 import imp
+import json
 import math
-import datetime
 import glob
 import fire
+import datetime
 import subprocess
 import progressbar
 from PIL import Image, ImageDraw, ImageFont
@@ -56,21 +57,21 @@ def comp_images(image_pattern, camera, focal, artist):
         back_image = create_back_image(img)
 
         #- up - left
-        _text = 'Cam: {0}'.format(camera)
+        _text = u'Cam: {0}'.format(camera)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UL)
         _size = _font.getsize(_text)
         _pos  = (Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- up - middle
-        # _text = '{0} x {1}'.format(fore_image.width, fore_image.height)
+        # _text = u'{0} x {1}'.format(fore_image.width, fore_image.height)
         # _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UM)
         # _size = _font.getsize(_text)
         # _pos = ((back_image.width - _size[0]) / 2, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         # draw_text(back_image, _pos, _text, _font)
 
         #- up - right
-        _text = 'Focal: {0}'.format(focal)
+        _text = u'Focal: {0}'.format(focal)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UR)
         _size = _font.getsize(_text)
         _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
@@ -78,14 +79,14 @@ def comp_images(image_pattern, camera, focal, artist):
 
         #- down - left
         _now = datetime.datetime.now()
-        _text = 'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
+        _text = u'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DL)
         _size = _font.getsize(_text)
         _pos = (Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
         draw_text(back_image, _pos, _text, _font)
 
         #- down - middle
-        _text = 'Artist: {0}'.format(artist)
+        _text = u'Artist: {0}'.format(artist)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DM)
         _size = _font.getsize(_text)
         _pos = ((back_image.width - _size[0]) / 2, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
@@ -94,7 +95,7 @@ def comp_images(image_pattern, camera, focal, artist):
         #- down - right
         curt_frame = re.search('\.\d+\.', os.path.basename(img)).group()[1:-1]
         last_frame = re.search('\.\d+\.', os.path.basename(images[-1])).group()[1:-1]
-        _text = 'Frame: {0}/{1}'.format(curt_frame, last_frame)
+        _text = u'Frame: {0}/{1}'.format(curt_frame, last_frame)
         _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
         _size = _font.getsize(_text)        
         _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
@@ -110,35 +111,39 @@ def comp_images(image_pattern, camera, focal, artist):
 def comp_video(image_pattern, output, audio=None):
     '''
     '''
-    sequence = image_pattern
+    sequence = image_pattern.replace('?', '@')
     if audio and os.path.isfile(audio):
-        sequence = '[ {0} {1} ]'.format(image_pattern, audio)
+        sequence = u'[ {0} {1} ]'.format(sequence, audio)
 
     commands = [Env.RVIO_BIN,
                 sequence,
-                '-outfps {0}'.format(Env.VIDEO_FPS),
-                '-codec {0}'.format(Env.VIDEO_CODEC),
-                '-outparams vcc:bf=0',
-                '-quality 1.0',
-                '-o {0}'.format(output),
-                '-rthreads {0}'.format(Env.RV_R_THREADING),
-                '-wthreads {0}'.format(Env.RV_W_TRHEADING),
-                '-v']
+                u'-outfps {0}'.format(Env.VIDEO_FPS),
+                u'-codec {0}'.format(Env.VIDEO_CODEC),
+                u'-outparams vcc:bf=0',
+                u'-quality 1.0',
+                u'-o {0}'.format(output),
+                u'-rthreads {0}'.format(Env.RV_R_THREADING),
+                u'-wthreads {0}'.format(Env.RV_W_TRHEADING),
+                u'-v']
 
-    subprocess.check_call(' '.join(commands))
-
-
+    subprocess.check_call(' '.join(commands).encode('utf-8'))
 
 
-def comp_blast_video(image_pattern, video_path, camera, focal, artist, audio):
+
+
+def comp_blast_video(info_file):
     '''
     '''
     with open(Env.MOTD_FILE, 'r') as f:
         sys.stdout.write(f.read().decode('utf-8'))
     sys.stdout.write('\n')
 
-    comp_images(image_pattern, camera, focal, artist)
-    comp_video(image_pattern.replace('?', '@'), video_path, audio)
+    info_data = dict()
+    with open(info_file, 'r') as f:
+        info_data = json.load(f)
+
+    comp_images(info_data['ImagePattern'], info_data['Camera'], info_data['Focal'], info_data['Artist'])
+    comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
 
 
 
