@@ -54,7 +54,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
 
     camera = blasterUtil.get_current_camera()
-    focal  = str(mc.getAttr('{0}.focalLength'.format(camera)))
+    focal  = mc.getAttr('{0}.focalLength'.format(camera))
     if not artist:
         artist = getpass.getuser()
 
@@ -63,10 +63,10 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     if sound_node:
         sound_file = mc.sound(sound_node, q=True, f=True)
 
-    image_path_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
+    image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
     text_process_cmds  = [blasterEnv.PROCESSOR,
                           'comp_blast_video',
-                          image_path_pattern,
+                          image_pattern,
                           output.decode('utf-8'),
                           str(camera),
                           str(focal),
@@ -77,7 +77,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- auto delete images
     if blasterEnv.AUTO_DELETE_IMAGE:
-        images = glob.glob(image_path_pattern)
+        images = glob.glob(image_pattern)
         for img in images:
             os.remove(img)
 
