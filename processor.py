@@ -12,6 +12,7 @@ import json
 import math
 import glob
 import fire
+import numpy
 import datetime
 import subprocess
 import progressbar
@@ -39,11 +40,21 @@ def create_back_image(image):
 
 
 
-def draw_text(image, pos, text, _font):
+def draw_text(image, pos, text, size):
     '''
     '''
     draw = ImageDraw.Draw(image)
-    draw.text(pos, text, font=_font, fill=Env.TEXT_COLOR)
+    _font = ImageFont.truetype(Env.TEXT_FONT, size)
+    _size = _font.getsize(text)
+
+    if pos[0] == Env.TEXT_BOUND:
+        _pos = [pos[0], pos[1]-_size[1]/2]
+    elif pos[0] == image.width - Env.TEXT_BOUND:
+        _pos = [pos[0] - _size[0], pos[1]-_size[1]/2]
+    else:
+        _pos = [pos[0] - _size[0]/2, pos[1]-_size[1]/2]
+
+    draw.text(_pos, text, font=_font, fill=Env.TEXT_COLOR)
     return True
 
 
@@ -56,50 +67,37 @@ def comp_images(image_pattern, camera, focal, artist):
         #- make background
         back_image = create_back_image(img)
 
+        text_x = numpy.linspace(Env.TEXT_BOUND, back_image.width - Env.TEXT_BOUND, 3)
+
+        up_text_y = numpy.linspace(0, Env.MASK_HEIGHT, 3)[1]
+        dw_text_y = back_image.height - up_text_y
+
         #- up - left
         _text = u'Cam: {0}'.format(camera)
-        _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UL)
-        _size = _font.getsize(_text)
-        _pos  = (Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        draw_text(back_image, _pos, _text, _font)
+        draw_text(back_image, (text_x[0], up_text_y), _text, Env.TEXT_SIZE_UL)
 
         #- up - middle
-        # _text = u'{0} x {1}'.format(fore_image.width, fore_image.height)
-        # _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UM)
-        # _size = _font.getsize(_text)
-        # _pos = ((back_image.width - _size[0]) / 2, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        # draw_text(back_image, _pos, _text, _font)
+        # _text = u'{0} x {1}'.format(back_image.width, back_image.height - Env.MASK_HEIGHT*2)
+        # draw_text(back_image, (text_x[1], up_text_y), _text, Env.TEXT_SIZE_UM)
 
         #- up - right
         _text = u'Focal: {0}'.format(focal)
-        _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_UR)
-        _size = _font.getsize(_text)
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        draw_text(back_image, _pos, _text, _font)
+        draw_text(back_image, (text_x[2], up_text_y), _text, Env.TEXT_SIZE_UR)
 
         #- down - left
         _now = datetime.datetime.now()
         _text = u'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
-        _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DL)
-        _size = _font.getsize(_text)
-        _pos = (Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        draw_text(back_image, _pos, _text, _font)
+        draw_text(back_image, (text_x[0], dw_text_y), _text, Env.TEXT_SIZE_DL)
 
         #- down - middle
         _text = u'Artist: {0}'.format(artist)
-        _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DM)
-        _size = _font.getsize(_text)
-        _pos = ((back_image.width - _size[0]) / 2, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        draw_text(back_image, _pos, _text, _font)
+        draw_text(back_image, (text_x[1], dw_text_y), _text, Env.TEXT_SIZE_DM)
 
         #- down - right
-        curt_frame = re.search('\.\d+\.', os.path.basename(img)).group()[1:-1]
-        last_frame = re.search('\.\d+\.', os.path.basename(images[-1])).group()[1:-1]
+        curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img)).group()
+        last_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[-1])).group()
         _text = u'Frame: {0}/{1}'.format(curt_frame, last_frame)
-        _font = ImageFont.truetype(Env.TEXT_FONT, Env.TEXT_SIZE_DR)
-        _size = _font.getsize(_text)        
-        _pos = (back_image.width - _size[0] - Env.TEXT_BOUND, back_image.height - Env.MASK_HEIGHT*0.5 - _size[1]*0.55)
-        draw_text(back_image, _pos, _text, _font)
+        draw_text(back_image, (text_x[2], dw_text_y), _text, Env.TEXT_SIZE_DR)
 
         #- save images
         back_image.save(img)
