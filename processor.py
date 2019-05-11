@@ -46,13 +46,14 @@ def draw_text(image, pos, text, size):
     draw = ImageDraw.Draw(image)
     _font = ImageFont.truetype(Env.TEXT_FONT, size)
     _size = _font.getsize(text)
-
+    
+    _pos = [0, pos[1]-_size[1]/2]
     if pos[0] == Env.TEXT_BOUND:
-        _pos = [pos[0], pos[1]-_size[1]/2]
+        _pos[0] = pos[0] 
     elif pos[0] == image.width - Env.TEXT_BOUND:
-        _pos = [pos[0] - _size[0], pos[1]-_size[1]/2]
+        _pos[0] = pos[0] - _size[0]
     else:
-        _pos = [pos[0] - _size[0]/2, pos[1]-_size[1]/2]
+        _pos[0] = pos[0] - _size[0]/2
 
     draw.text(_pos, text, font=_font, fill=Env.TEXT_COLOR)
     return True
