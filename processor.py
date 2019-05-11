@@ -4,18 +4,8 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys
-import os
-import re
-import imp
-import json
-import math
-import glob
-import fire
-import numpy
-import datetime
-import subprocess
-import progressbar
+import sys, os, re, imp, json, math, glob, datetime, subprocess
+import numpy, progressbar, fire
 from PIL import Image, ImageDraw, ImageFont
 
 if os.path.basename(sys.executable) == 'python.exe':
