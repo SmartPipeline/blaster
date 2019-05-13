@@ -36,16 +36,11 @@ def draw_text(image, pos, text, size):
     draw = ImageDraw.Draw(image)
     _font = ImageFont.truetype(Env.TEXT_FONT, size)
     _size = _font.getsize(text)
-    
-    _pos = [0, pos[1]-_size[1]/2]
-    if pos[0] == Env.TEXT_BOUND:
-        _pos[0] = pos[0] 
-    elif pos[0] == image.width - Env.TEXT_BOUND:
-        _pos[0] = pos[0] - _size[0]
-    else:
-        _pos[0] = pos[0] - _size[0]/2
 
-    draw.text(_pos, text, font=_font, fill=Env.TEXT_COLOR)
+    X = min(max(Env.TEXT_BOUND, pos[0] - _size[0]/2), image.width - Env.TEXT_BOUND - _size[0])
+    Y = min(pos[1] + Env.MASK_HEIGHT/2 - _size[1]/2,  image.height - Env.MASK_HEIGHT/2 - _size[1]/2)
+    draw.text((X, Y), text, font=_font, fill=Env.TEXT_COLOR)
+
     return True
 
 
@@ -58,37 +53,35 @@ def comp_images(image_pattern, camera, focal, artist):
         #- make background
         back_image = create_back_image(img)
 
-        text_x = numpy.linspace(Env.TEXT_BOUND, back_image.width - Env.TEXT_BOUND, 3)
-
-        up_text_y = numpy.linspace(0, Env.MASK_HEIGHT, 3)[1]
-        dw_text_y = back_image.height - up_text_y
+        text_pos_x = numpy.linspace(0, back_image.width,  3)
+        text_pos_y = numpy.linspace(0, back_image.height, 2)
 
         #- up - left
         _text = u'Cam: {0}'.format(camera)
-        draw_text(back_image, (text_x[0], up_text_y), _text, Env.TEXT_SIZE_UL)
+        draw_text(back_image, (text_pos_x[0], text_pos_y[0]), _text, Env.TEXT_SIZE_UL)
 
         #- up - middle
         # _text = u'{0} x {1}'.format(back_image.width, back_image.height - Env.MASK_HEIGHT*2)
-        # draw_text(back_image, (text_x[1], up_text_y), _text, Env.TEXT_SIZE_UM)
+        # draw_text(back_image, (text_pos_x[1], text_pos_y[0]), _text, Env.TEXT_SIZE_UM)
 
         #- up - right
         _text = u'Focal: {0}'.format(focal)
-        draw_text(back_image, (text_x[2], up_text_y), _text, Env.TEXT_SIZE_UR)
+        draw_text(back_image, (text_pos_x[2], text_pos_y[0]), _text, Env.TEXT_SIZE_UR)
 
         #- down - left
         _now = datetime.datetime.now()
         _text = u'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
-        draw_text(back_image, (text_x[0], dw_text_y), _text, Env.TEXT_SIZE_DL)
+        draw_text(back_image, (text_pos_x[0], text_pos_y[1]), _text, Env.TEXT_SIZE_DL)
 
         #- down - middle
         _text = u'Artist: {0}'.format(artist)
-        draw_text(back_image, (text_x[1], dw_text_y), _text, Env.TEXT_SIZE_DM)
+        draw_text(back_image, (text_pos_x[1], text_pos_y[1]), _text, Env.TEXT_SIZE_DM)
 
         #- down - right
         curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img)).group()
         last_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[-1])).group()
         _text = u'Frame: {0}/{1}'.format(curt_frame, last_frame)
-        draw_text(back_image, (text_x[2], dw_text_y), _text, Env.TEXT_SIZE_DR)
+        draw_text(back_image, (text_pos_x[2], text_pos_y[1]), _text, Env.TEXT_SIZE_DR)
 
         #- save images
         back_image.save(img)
