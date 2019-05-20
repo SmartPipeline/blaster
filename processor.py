@@ -49,7 +49,8 @@ def comp_images(image_pattern, camera, focal, artist):
     '''
     '''
     images = glob.glob(image_pattern)
-    for img in progressbar.progressbar(images):
+
+    for i, img in enumerate(progressbar.progressbar(images)):
         #- make background
         back_image = create_back_image(img)
 
@@ -78,8 +79,18 @@ def comp_images(image_pattern, camera, focal, artist):
         draw_text(back_image, (text_pos_x[1], text_pos_y[1]), _text, Env.TEXT_SIZE_DM)
 
         #- down - right
-        curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img)).group()
-        last_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[-1])).group()
+        curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img))
+        last_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[-1]))
+        if curt_frame:
+            curt_frame = curt_frame.group()
+        else:
+            curt_frame = '{0:0>4}'.format(i+1)
+
+        if last_frame:
+            last_frame = last_frame.group()
+        else:
+            last_frame = '{0:0>4}'.format(len(images)+1)
+
         _text = u'Frame: {0}/{1}'.format(curt_frame, last_frame)
         draw_text(back_image, (text_pos_x[2], text_pos_y[1]), _text, Env.TEXT_SIZE_DR)
 
