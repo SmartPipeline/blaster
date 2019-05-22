@@ -12,9 +12,6 @@ def get_current_camera():
     camera = 'persp'
 
     panels = mc.getPanel(vis=True)
-    if mc.getPanel(wf=True):
-        panels.insert(0, mc.getPanel(wf=True))
-
     for panel in panels:
         if panel not in mc.getPanel(typ='modelPanel'):
             continue
@@ -24,7 +21,9 @@ def get_current_camera():
             camera = cam
         else:
             camera = mc.listRelatives(cam, p=True)[0]
-        break
+
+        if camera not in ('persp', 'top', 'front', 'side'):
+            break
 
     return camera
 
