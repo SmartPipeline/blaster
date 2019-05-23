@@ -17,12 +17,11 @@ def get_current_camera():
             continue
 
         cam = mc.modelPanel(panel, q=True, cam=True)
-        if mc.nodeType(cam) == 'transform':
-            camera = cam
-        else:
-            camera = mc.listRelatives(cam, p=True)[0]
+        if mc.nodeType(cam) != 'transform':
+            cam = mc.listRelatives(cam, p=True)[0]
 
-        if camera not in ('persp', 'top', 'front', 'side'):
+        if cam not in ('persp', 'top', 'front', 'side'):
+            camera = cam
             break
 
     return camera
