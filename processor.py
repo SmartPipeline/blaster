@@ -101,7 +101,7 @@ def comp_images(image_pattern, camera, focal, artist):
 
 
 
-def comp_video(image_pattern, output, audio=None):
+def rv_comp_video(image_pattern, output, audio=None):
     '''
     '''
     sequence = image_pattern.replace('?', '@')
@@ -124,6 +124,33 @@ def comp_video(image_pattern, output, audio=None):
 
 
 
+def ffmpeg_comp_video(image_pattern, output, audio=None):
+    '''
+    '''
+    images = glob.glob(image_pattern)
+    start_num = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[0])).group()
+    sequence  = re.sub('\.\?+\.'.format(start_num), '.%{0}d.'.format(len(start_num)), image_pattern)
+
+    if audio and os.path.isfile(audio):
+        input_audio = '-i {0}'.format(audio)
+    else:
+        input_audio = ''
+
+    commands = [Env.FFMPEG_BIN,
+                '-start_number {0}'.format(start_num),
+                '-i {0}'.format(sequence),
+                '{0}'.format(input_audio),
+                '-c:v {0}'.format(Env.VIDEO_CODEC),
+                '-r {0}'.format(Env.VIDEO_FPS),
+                '-pix_fmt yuv420p',
+                '-x264opts b_pyramid=0',
+                output]
+
+    subprocess.check_call(' '.join(commands).encode('gbk'))
+
+
+
+
 def comp_blast_video(info_file):
     '''
     '''
@@ -136,13 +163,14 @@ def comp_blast_video(info_file):
         info_data = json.load(f)
 
     comp_images(info_data['ImagePattern'], info_data['Camera'], info_data['Focal'], info_data['Artist'])
-    comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
+    rv_comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
 
 
 
 if __name__ == '__main__':
     fire.Fire({
         'comp_images': comp_images,
-        'comp_video': comp_video,
+        'rv_comp_video': rv_comp_video,
+        'ffmpeg_comp_video':ffmpeg_comp_video,
         'comp_blast_video': comp_blast_video
     })

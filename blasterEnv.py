@@ -19,6 +19,9 @@ RVIO_BIN  = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rvio_hw.exe'
 
 RV_BIN    = 'C:/Program Files/Shotgun/RV-7.1.1/bin/rv.exe'
 
+FFMPEG_BIN = os.path.join(os.path.dirname(__file__), 'resource/ffmpeg/bin/ffmpeg.exe')
+
+
 
 
 MASK_HEIGHT = 87
