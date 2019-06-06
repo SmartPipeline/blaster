@@ -144,6 +144,7 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
                 '-r {0}'.format(Env.VIDEO_FPS),
                 '-pix_fmt yuv420p',
                 '-x264opts b_pyramid=0',
+                '-y',
                 output]
 
     subprocess.check_call(' '.join(commands).encode('gbk'))
