@@ -151,7 +151,7 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
 
 
 
-def comp_blast_video(info_file):
+def comp_blast_video(info_file, use_ffmpeg=True):
     '''
     '''
     with open(Env.MOTD_FILE, 'r') as f:
@@ -163,7 +163,10 @@ def comp_blast_video(info_file):
         info_data = json.load(f)
 
     comp_images(info_data['ImagePattern'], info_data['Camera'], info_data['Focal'], info_data['Artist'])
-    rv_comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
+    if use_ffmpeg:
+        ffmpeg_comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
+    else:
+        rv_comp_video(info_data['ImagePattern'],  info_data['Output'], info_data['Audio'])
 
 
 
