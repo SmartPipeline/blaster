@@ -127,9 +127,8 @@ def rv_comp_video(image_pattern, output, audio=None):
 def ffmpeg_comp_video(image_pattern, output, audio=None):
     '''
     '''
-    images = glob.glob(image_pattern)
-    start_num = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[0])).group()
-    sequence  = re.sub('\.\?+\.'.format(start_num), '.%{0}d.'.format(len(start_num)), image_pattern)
+    start_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(glob.glob(image_pattern)[0])).group()
+    sequence    = re.sub('\.\?+\.', '.%{0}d.'.format(len(start_frame)), image_pattern)
 
     if audio and os.path.isfile(audio):
         input_audio = '-i {0}'.format(audio)
@@ -137,7 +136,7 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
         input_audio = ''
 
     commands = [Env.FFMPEG_BIN,
-                '-start_number {0}'.format(start_num),
+                '-start_number {0}'.format(start_frame),
                 '-i {0}'.format(sequence),
                 '{0}'.format(input_audio),
                 '-vcodec {0}'.format(Env.VIDEO_CODEC),
