@@ -137,6 +137,7 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
 
     commands = [Env.FFMPEG_BIN,
                 '-start_number {0}'.format(start_frame),
+                '-framerate {0}'.format(Env.VIDEO_FPS),
                 '-i {0}'.format(sequence),
                 '{0}'.format(input_audio),
                 '-vcodec {0}'.format(Env.VIDEO_CODEC),
