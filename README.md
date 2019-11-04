@@ -38,4 +38,5 @@ blaster.UI()
 
 
 ### 示例 Example
+![](https://github.com/SmartPipeline/blaster/blob/master/resource/temp/微信图片_20191104181057.jpg)
 ![](https://github.com/SmartPipeline/blaster/blob/master/resource/temp/caixukun.0290.jpg)
