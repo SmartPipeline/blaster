@@ -3,10 +3,10 @@
 #      mail: zclongpop123@163.com
 #      time: Fri Apr 12 13:44:33 2019
 #========================================
-import os
+import os, tempfile
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 #- Image path and format
-BLAST_IMAGE_DIR = os.path.expanduser('~/playblast')
+BLAST_IMAGE_DIR = os.path.join(os.path.dirname(tempfile.mktemp()), 'playblast')
 
 BLAST_IMAGE_FMT = 'tga'
 
