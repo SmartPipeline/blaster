@@ -10,18 +10,25 @@ import math
 import uuid
 import glob
 import json
+import yaml
 import getpass
+import tempfile
 import subprocess
 import maya.cmds as mc
 import maya.mel as mel
-import blasterEnv, blasterUtil
+import blasterUtil
+
+this_dir = os.path.dirname(__file__)
+with open(os.path.join(this_dir, 'config.yml'), 'r') as f:
+    config = yaml.load(f, Loader=yaml.Loader) 
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     '''
     '''
     # - make blast image dir  | Exp: C:/Users/zangchanglong/Documents/playblast
-    if not os.path.isdir(blasterEnv.BLAST_IMAGE_DIR):
-        os.makedirs(blasterEnv.BLAST_IMAGE_DIR)
+    image_dir = config['image_dir'].format(os.path.dirname(tempfile.mktemp()))
+    if not os.path.isdir(image_dir):
+        os.makedirs(image_dir)
 
     #- close all camera gate
     for cam in mc.ls(typ='camera'):
@@ -35,11 +42,11 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         end_frame = mc.playbackOptions(q=True, aet=True)
 
     #- playblast images
-    BLAST_PREFIX  = os.path.join(blasterEnv.BLAST_IMAGE_DIR, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
+    BLAST_PREFIX  = os.path.join(image_dir, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
     FRAME_PADDING = int(math.ceil(math.log(max(start_frame, end_frame)+1, 10)))
     mc.playblast(filename = BLAST_PREFIX,
                  fmt = 'image',
-                 compression = blasterEnv.BLAST_IMAGE_FMT,
+                 compression = config['image_fmt'],
 
                  width = mc.getAttr('defaultResolution.width'),
                  height = mc.getAttr('defaultResolution.height'),
@@ -57,7 +64,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  showOrnaments = False)
 
     #- getting infomation
-    image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, blasterEnv.BLAST_IMAGE_FMT)
+    image_pattern = '{0}.{1}.{2}'.format(BLAST_PREFIX, '?'*FRAME_PADDING, config['image_fmt'])
     camera = blasterUtil.get_current_camera()
     focal  = mc.getAttr('{0}.focalLength'.format(camera))
     if not artist:
@@ -81,13 +88,11 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         json.dump(info_data, f, indent=4)
 
     #- call comp process
-    comp_process_cmds  = [blasterEnv.PROCESSOR,
-                          'comp_blast_video',
-                          info_file]
+    comp_process_cmds  = [config['processor'].format(this_dir), 'comp_blast_video', info_file]
     subprocess.check_call(' '.join(comp_process_cmds).encode('utf-8'))
 
     #- auto delete images
-    if blasterEnv.AUTO_DELETE_IMAGE:
+    if config['auto_delete_image']:
         images = glob.glob(image_pattern)
         for img in images:
             os.remove(img)
@@ -98,7 +103,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- view output
     if view:
-        rv_view_cmds = [blasterEnv.RV_BIN, output.encode('utf-8')]
+        rv_view_cmds = [config['rv_bin'], output.encode('utf-8')]
         subprocess.Popen(' '.join(rv_view_cmds))
 
     return True    

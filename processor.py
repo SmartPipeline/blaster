@@ -4,42 +4,46 @@
 #      mail: zclongpop123@163.com
 #      time: Thu Apr 11 15:11:43 2019
 #========================================
-import sys, os, re, imp, json, math, glob, datetime, subprocess
-import numpy, progressbar, fire
+import sys, os, re, json, math, glob, datetime, subprocess
+import yaml, numpy, progressbar, fire
 from PIL import Image, ImageDraw, ImageFont
 
 if os.path.basename(sys.executable) == 'python.exe':
-    Env = imp.load_source('Env', os.path.join(os.path.dirname(__file__), 'blasterEnv.py'))
+    this_dir = os.path.dirname(__file__)
+
 else:
-    Env = imp.load_source('Env', os.path.join(os.path.dirname(sys.executable), 'blasterEnv.py'))
+    this_dir = os.path.dirname(sys.executable)
+
+with open(os.path.join(this_dir, 'config.yml'), 'r') as f:
+    config = yaml.load(f, Loader=yaml.Loader)   
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 def create_back_image(image):
     '''
     '''
     fore_image = Image.open(image)
 
-    back_width, back_height = fore_image.width, fore_image.height + Env.MASK_HEIGHT*2
+    back_width, back_height = fore_image.width, fore_image.height + config['mask_height']*2
     back_width  = int(math.ceil(back_width  / 2.0) * 2)
     back_height = int(math.ceil(back_height / 2.0) * 2)
 
-    back_image = Image.new('RGB', (back_width, back_height), Env.MASK_COLOR)
-    back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, Env.MASK_HEIGHT))
+    back_image = Image.new('RGB', (back_width, back_height), tuple(config['mask_color']))
+    back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, config['mask_height']))
     fore_image.close()
 
     return back_image
 
 
 
-def draw_text(image, pos, text, size):
+def draw_text(image, pos, text, font, size, color):
     '''
     '''
     draw = ImageDraw.Draw(image)
-    _font = ImageFont.truetype(Env.TEXT_FONT, size)
+    _font = ImageFont.truetype(font.format(this_dir), size)
     _size = _font.getsize(text)
 
-    X = min(max(Env.TEXT_BOUND, pos[0] - _size[0]/2), image.width - Env.TEXT_BOUND - _size[0])
-    Y = min(pos[1] + Env.MASK_HEIGHT/2 - _size[1]/2,  image.height - Env.MASK_HEIGHT/2 - _size[1]/2)
-    draw.text((X, Y), text, font=_font, fill=Env.TEXT_COLOR)
+    X = min(max(config['text_bound'], pos[0] - _size[0]/2), image.width  - config['text_bound']    - _size[0])
+    Y = min(pos[1] + config['mask_height']/2 - _size[1]/2,  image.height - config['mask_height']/2 - _size[1]/2)
+    draw.text((X, Y), text, font=_font, fill=tuple(color))
 
     return True
 
@@ -50,6 +54,14 @@ def comp_images(image_pattern, camera, focal, artist):
     '''
     images = glob.glob(image_pattern)
 
+    date = datetime.datetime.now()
+    info_data = {
+        'camera': camera,
+        'focal' : focal,
+        'date'  : focal,
+        'date'  : '{0:0>4}-{1:0>2}-{2:0>2}'.format(date.year, date.month, date.day),
+        'artist': artist
+    }
     for i, img in enumerate(progressbar.progressbar(images)):
         #- make background
         back_image = create_back_image(img)
@@ -58,25 +70,19 @@ def comp_images(image_pattern, camera, focal, artist):
         text_pos_y = numpy.linspace(0, back_image.height, 2)
 
         #- up - left
-        _text = u'Cam: {0}'.format(camera)
-        draw_text(back_image, (text_pos_x[0], text_pos_y[0]), _text, Env.TEXT_SIZE_UL)
+        draw_text(back_image, (text_pos_x[0], text_pos_y[0]), config['text'][0][0]['text'].format(**info_data), config['text'][0][0]['font'], config['text'][0][0]['size'], config['text'][0][0]['color'])
 
         #- up - middle
-        # _text = u'{0} x {1}'.format(back_image.width, back_image.height - Env.MASK_HEIGHT*2)
-        # draw_text(back_image, (text_pos_x[1], text_pos_y[0]), _text, Env.TEXT_SIZE_UM)
+        draw_text(back_image, (text_pos_x[1], text_pos_y[0]), config['text'][0][1]['text'].format(**info_data), config['text'][0][1]['font'], config['text'][0][1]['size'], config['text'][0][1]['color'])
 
         #- up - right
-        _text = u'Focal: {0}'.format(focal)
-        draw_text(back_image, (text_pos_x[2], text_pos_y[0]), _text, Env.TEXT_SIZE_UR)
+        draw_text(back_image, (text_pos_x[2], text_pos_y[0]), config['text'][0][2]['text'].format(**info_data), config['text'][0][2]['font'], config['text'][0][2]['size'], config['text'][0][2]['color'])
 
         #- down - left
-        _now = datetime.datetime.now()
-        _text = u'Date: {0:0>4}-{1:0>2}-{2:0>2}'.format(_now.year, _now.month, _now.day)
-        draw_text(back_image, (text_pos_x[0], text_pos_y[1]), _text, Env.TEXT_SIZE_DL)
+        draw_text(back_image, (text_pos_x[0], text_pos_y[1]), config['text'][1][0]['text'].format(**info_data), config['text'][1][0]['font'], config['text'][1][0]['size'], config['text'][1][0]['color'])
 
         #- down - middle
-        _text = u'Artist: {0}'.format(artist)
-        draw_text(back_image, (text_pos_x[1], text_pos_y[1]), _text, Env.TEXT_SIZE_DM)
+        draw_text(back_image, (text_pos_x[1], text_pos_y[1]), config['text'][1][1]['text'].format(**info_data), config['text'][1][1]['font'], config['text'][1][1]['size'], config['text'][1][1]['color'])
 
         #- down - right
         curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img))
@@ -91,8 +97,9 @@ def comp_images(image_pattern, camera, focal, artist):
         else:
             last_frame = '{0:0>4}'.format(len(images)+1)
 
-        _text = u'Frame: {0}/{1}'.format(curt_frame, last_frame)
-        draw_text(back_image, (text_pos_x[2], text_pos_y[1]), _text, Env.TEXT_SIZE_DR)
+        info_data['current_frame'] = curt_frame
+        info_data['total_frame'] = last_frame
+        draw_text(back_image, (text_pos_x[2], text_pos_y[1]), config['text'][1][2]['text'].format(**info_data), config['text'][1][2]['font'], config['text'][1][2]['size'], config['text'][1][2]['color'])
 
         #- save images
         back_image.save(img)
@@ -108,15 +115,15 @@ def rv_comp_video(image_pattern, output, audio=None):
     if audio and os.path.isfile(audio):
         sequence = u'[ {0} {1} ]'.format(sequence, audio)
 
-    commands = [Env.RVIO_BIN,
+    commands = [config['rvio_bin'],
                 sequence,
-                u'-outfps {0}'.format(Env.VIDEO_FPS),
-                u'-codec {0}'.format(Env.VIDEO_CODEC),
+                u'-outfps {0}'.format(config['fps']),
+                u'-codec {0}'.format(config['codec']),
                 u'-outparams vcc:bf=0',
                 u'-quality 1.0',
                 u'-o {0}'.format(output),
-                u'-rthreads {0}'.format(Env.RV_R_THREADING),
-                u'-wthreads {0}'.format(Env.RV_W_TRHEADING),
+                u'-rthreads {0}'.format(config['rv_r_thread']),
+                u'-wthreads {0}'.format(config['rv_w_thread']),
                 u'-v']
 
     subprocess.check_call(' '.join(commands).encode('utf-8'))
@@ -135,17 +142,17 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
     else:
         input_audio = ''
 
-    commands = [Env.FFMPEG_BIN,
+    commands = [config['ffmpeg_bin'].format(this_dir),
                 '-start_number {0}'.format(start_frame),
-                '-framerate {0}'.format(Env.VIDEO_FPS),
+                '-framerate {0}'.format(config['fps']),
                 '-i {0}'.format(sequence),
                 '{0}'.format(input_audio),
-                '-vcodec {0}'.format(Env.VIDEO_CODEC),
+                '-vcodec {0}'.format(config['codec']),
                 '-vf format=rgb24',
                 '-pix_fmt yuv420p',
                 '-profile:v main',
                 '-crf 16',
-                '-r {0}'.format(Env.VIDEO_FPS),
+                '-r {0}'.format(config['fps']),
                 '-x264opts b_pyramid=0',
                 '-y',
                 output]
@@ -158,7 +165,7 @@ def ffmpeg_comp_video(image_pattern, output, audio=None):
 def comp_blast_video(info_file, use_ffmpeg=True):
     '''
     '''
-    with open(Env.MOTD_FILE, 'r') as f:
+    with open(config['motd'].format(this_dir), 'r') as f:
         sys.stdout.write(f.read().decode('utf-8'))
     sys.stdout.write('\n')
 
