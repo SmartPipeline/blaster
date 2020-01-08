@@ -79,14 +79,14 @@ def comp_images(image_pattern, camera, focal, artist):
         else:
             info_data['total_frame'] = '{0:0>4}'.format(len(images)+1)
 
-        text_pos_y = numpy.linspace(0, back_image.height, 2)
+        pos_y = numpy.linspace(0, back_image.height, 2)
         for column, cfg in enumerate(config['text'][0]):
-            text_pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
-            draw_text(back_image, (text_pos_x[column], text_pos_y[0]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])
+            pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
+            draw_text(back_image, (pos_x[column], pos_y[0]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])
 
         for column, cfg in enumerate(config['text'][1]):
-            text_pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
-            draw_text(back_image, (text_pos_x[column], text_pos_y[1]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])            
+            pos_x = numpy.linspace(0, back_image.width, len(config['text'][1]))
+            draw_text(back_image, (pos_x[column], pos_y[1]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])            
 
         #- save images
         back_image.save(img)
