@@ -32,7 +32,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- close all camera gate
     for cam in mc.ls(typ='camera'):
-        mc.camera(cam, e=True, dfg=False, dfo=False, dfp=False, dr=False, dst=True, overscan=1.0)
+        mc.camera(cam, e=True, dfg=False, dfo=False, dfp=False, dr=False, dsa=True, dst=False, overscan=1.0)
 
     #- get time range
     if start_frame is None:
@@ -48,11 +48,11 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
                  fmt = 'image',
                  compression = config['image_fmt'],
 
-                 width = mc.getAttr('defaultResolution.width'),
-                 height = mc.getAttr('defaultResolution.height'),
+                 width  = config['width'],
+                 height = config['height'],
 
                  startTime = start_frame,
-                 endTime = end_frame,
+                 endTime   = end_frame,
                  framePadding = FRAME_PADDING,
 
                  percent = 100,
