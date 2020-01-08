@@ -1,0 +1,75 @@
+project: MK
+
+width: 1920
+
+height: 1080
+
+fps: 24
+
+codec: libx264
+
+processor: 'C:/Python27/python.exe "{0}/processor.py"'
+
+motd:  '{0}/resource/motd/Buddha'
+
+
+image_dir: '{0}/playblast'
+
+image_fmt: tga
+
+
+mask_height: 87
+
+mask_color: [0, 0, 0]
+
+
+text_bound: 12
+
+text:
+    - 
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Project: MK'
+          color: [255, 255, 255]
+
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Cam: {camera}'
+          color: [255, 255, 255]
+
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Focal: {focal}'
+          color: [255, 255, 255]
+    
+    - 
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Date: {date}'
+          color: [255, 255, 255]
+          
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Artist: {artist}'
+          color: [255, 255, 255]
+        
+        - size: 25
+          font: '{0}/resource/font/MONACO.TTF'
+          text: 'Frame: {current_frame}/{total_frame}'
+          color: [255, 255, 255]
+
+
+rvio_bin: 'C:/Program Files/Shotgun/RV-7.2.5/bin/rvio_hw.exe'
+
+rv_bin: 'C:/Program Files/Shotgun/RV-7.2.5/bin/rv.exe'
+
+rv_r_thread: 16
+
+rv_w_thread: 16
+
+
+ffmpeg_bin: '{0}/resource/ffmpeg/bin/ffmpeg.exe'
+
+
+
+auto_delete_image: true

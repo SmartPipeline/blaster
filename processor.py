@@ -62,44 +62,31 @@ def comp_images(image_pattern, camera, focal, artist):
         'date'  : '{0:0>4}-{1:0>2}-{2:0>2}'.format(date.year, date.month, date.day),
         'artist': artist
     }
+
     for i, img in enumerate(progressbar.progressbar(images)):
         #- make background
         back_image = create_back_image(img)
 
-        text_pos_x = numpy.linspace(0, back_image.width,  3)
-        text_pos_y = numpy.linspace(0, back_image.height, 2)
-
-        #- up - left
-        draw_text(back_image, (text_pos_x[0], text_pos_y[0]), config['text'][0][0]['text'].format(**info_data), config['text'][0][0]['font'], config['text'][0][0]['size'], config['text'][0][0]['color'])
-
-        #- up - middle
-        draw_text(back_image, (text_pos_x[1], text_pos_y[0]), config['text'][0][1]['text'].format(**info_data), config['text'][0][1]['font'], config['text'][0][1]['size'], config['text'][0][1]['color'])
-
-        #- up - right
-        draw_text(back_image, (text_pos_x[2], text_pos_y[0]), config['text'][0][2]['text'].format(**info_data), config['text'][0][2]['font'], config['text'][0][2]['size'], config['text'][0][2]['color'])
-
-        #- down - left
-        draw_text(back_image, (text_pos_x[0], text_pos_y[1]), config['text'][1][0]['text'].format(**info_data), config['text'][1][0]['font'], config['text'][1][0]['size'], config['text'][1][0]['color'])
-
-        #- down - middle
-        draw_text(back_image, (text_pos_x[1], text_pos_y[1]), config['text'][1][1]['text'].format(**info_data), config['text'][1][1]['font'], config['text'][1][1]['size'], config['text'][1][1]['color'])
-
-        #- down - right
         curt_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(img))
         last_frame = re.search('(?<=\.)\d+(?=\.)', os.path.basename(images[-1]))
         if curt_frame:
-            curt_frame = curt_frame.group()
+            info_data['current_frame'] = curt_frame.group()
         else:
-            curt_frame = '{0:0>4}'.format(i+1)
+            info_data['current_frame'] = '{0:0>4}'.format(i+1)
 
         if last_frame:
-            last_frame = last_frame.group()
+            info_data['total_frame'] = last_frame.group()
         else:
-            last_frame = '{0:0>4}'.format(len(images)+1)
+            info_data['total_frame'] = '{0:0>4}'.format(len(images)+1)
 
-        info_data['current_frame'] = curt_frame
-        info_data['total_frame'] = last_frame
-        draw_text(back_image, (text_pos_x[2], text_pos_y[1]), config['text'][1][2]['text'].format(**info_data), config['text'][1][2]['font'], config['text'][1][2]['size'], config['text'][1][2]['color'])
+        text_pos_y = numpy.linspace(0, back_image.height, 2)
+        for column, cfg in enumerate(config['text'][0]):
+            text_pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
+            draw_text(back_image, (text_pos_x[column], text_pos_y[0]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])
+
+        for column, cfg in enumerate(config['text'][1]):
+            text_pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
+            draw_text(back_image, (text_pos_x[column], text_pos_y[1]), cfg['text'].format(**info_data), cfg['font'], cfg['size'], cfg['color'])            
 
         #- save images
         back_image.save(img)
