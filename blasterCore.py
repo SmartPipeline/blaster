@@ -32,7 +32,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- close all camera gate
     for cam in mc.ls(typ='camera'):
-        mc.camera(cam, e=True, displayFilmGate=False, displayResolution=False, overscan=1.0)
+        mc.camera(cam, e=True, dfg=False, dfo=False, dfp=False, dr=False, dst=True, overscan=1.0)
 
     #- get time range
     if start_frame is None:
