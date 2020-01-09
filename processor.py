@@ -58,7 +58,6 @@ def comp_images(image_pattern, camera, focal, artist):
     info_data = {
         'camera': camera,
         'focal' : focal,
-        'date'  : focal,
         'date'  : '{0:0>4}-{1:0>2}-{2:0>2}'.format(date.year, date.month, date.day),
         'artist': artist
     }
