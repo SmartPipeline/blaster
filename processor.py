@@ -22,9 +22,8 @@ def create_back_image(image):
     '''
     fore_image = Image.open(image)
 
-    back_width, back_height = fore_image.width, fore_image.height + config['mask_height']*2
-    back_width  = int(math.ceil(back_width  / 2.0) * 2)
-    back_height = int(math.ceil(back_height / 2.0) * 2)
+    back_width  = int(math.ceil(fore_image.width  / 2.0) * 2)
+    back_height = int(math.ceil((fore_image.height + config['mask_height']*2) / 2.0) * 2)
 
     back_image = Image.new('RGB', (back_width, back_height), tuple(config['mask_color']))
     back_image.paste(fore_image.resize((back_image.width, fore_image.height)), (0, config['mask_height']))
