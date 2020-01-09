@@ -8,9 +8,10 @@ fps: 24
 
 codec: libx264
 
-processor: 'C:/Python27/python.exe "{0}/processor.py"'
+processor: '{0}/processor.exe'
 
-motd:  '{0}/resource/motd/Buddha'
+motd:  '{0}/resource/motd/girl
+'
 
 
 image_dir: '{0}/playblast'
@@ -23,15 +24,16 @@ mask_height: 87
 mask_color: [0, 0, 0]
 
 
-text_bound: 12
+text_bound: 8
 
 text:
+    #- top
     - 
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
           text: 'Project: MK'
           color: [255, 255, 255]
-
+        
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
           text: 'Cam: {camera}'
@@ -42,15 +44,16 @@ text:
           text: 'Focal: {focal}'
           color: [255, 255, 255]
     
+    #- buttom
     - 
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
-          text: 'Date: {date}'
+          text: 'Date: {date} UTC+08:00'
           color: [255, 255, 255]
           
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
-          text: 'Artist: {artist}'
+          text: 'Artist:DQ {artist}'
           color: [255, 255, 255]
         
         - size: 25
