@@ -102,7 +102,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         os.remove(info_file)
 
     #- view output
-    if view:
+    if view and os.path.isfile(config['rv_bin']):
         rv_view_cmds = [config['rv_bin'], output.encode('utf-8')]
         subprocess.Popen(' '.join(rv_view_cmds))
 
