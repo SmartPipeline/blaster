@@ -58,7 +58,7 @@ text:
         
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
-          text: 'Frame: {current_frame}/{total_frame}'
+          text: 'Frame: {current_frame}/{total_frame} {frame_index}/{frame_count}'
           color: [255, 255, 255]
 
 

@@ -78,6 +78,10 @@ def comp_images(image_pattern, camera, focal, artist):
         else:
             info_data['total_frame'] = '{0:0>4}'.format(len(images)+1)
 
+        info_data['frame_index'] = i + 1
+        info_data['frame_count'] = len(images)
+
+
         pos_y = numpy.linspace(0, back_image.height, 2)
         for column, cfg in enumerate(config['text'][0]):
             pos_x = numpy.linspace(0, back_image.width, len(config['text'][0]))
