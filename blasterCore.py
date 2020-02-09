@@ -4,16 +4,8 @@
 #      mail: zclongpop123@163.com
 #      time: Fri Apr 12 13:41:08 2019
 #========================================
-import os
-import time
-import math
-import uuid
-import glob
-import json
-import yaml
-import getpass
-import tempfile
-import subprocess
+import os, re, time, math, uuid, glob, json, yaml
+import getpass, tempfile, subprocess
 import maya.cmds as mc
 import maya.mel as mel
 import blasterUtil
@@ -89,6 +81,7 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- call comp process
     comp_process_cmds  = [config['processor'].format(this_dir), 'comp_blast_video', info_file]
+    print comp_process_cmds
     subprocess.check_call(' '.join(comp_process_cmds).encode('utf-8'))
 
     #- auto delete images
@@ -107,3 +100,62 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
         subprocess.Popen(' '.join(rv_view_cmds))
 
     return True    
+
+
+
+
+def batch_playblast(path):
+    '''
+    '''
+    for filePath in glob.glob('{0}/*.mb'.format(path)):
+
+        #- open file
+        if re.search('\.ma$', filePath):
+            f_type = 'mayaAscii'
+
+        elif re.search('\.mb$', filePath):
+            f_type = 'mayaBinary'
+
+        else:
+            return False
+
+        mc.file(filePath, typ=f_type, o=True, f=True, prompt=False, ignoreVersion=True)
+
+        #- checking file name
+        file_name = mc.file(q=True, sn=True)
+        if not file_name:
+            continue
+
+        #- checking lost reference files
+        reference_load_stat = True
+        for ref in mc.file(q=True, r=True):
+            ref_stat = mc.referenceQuery(ref, il=True)
+
+            if not ref_stat and not os.path.isfile(ref.split('{')[0]):
+                reference_load_stat = False
+                break
+    
+        if not reference_load_stat:
+            continue
+
+        #- checking cameras
+        cameras = [cam for cam in mc.listRelatives(mc.ls(cameras=True), p=True) if re.match('Ep', cam, re.I)]
+        if cameras:
+            blast_cam = cameras[0]
+        else:
+            blast_cam = 'persp'
+
+        #- set panels
+        panels = mc.getPanel(vis=True)
+        for pan in panels:
+            if pan in mc.getPanel(typ='modelPanel'):
+                mc.modelEditor(pan, e=True, cam=blast_cam)
+                mc.modelEditor(pan, e=True, alo=False)
+                mc.modelEditor(pan, e=True, pm=True)
+                mc.modelEditor(pan, e=True, av=True)
+                mc.modelEditor(pan, e=True, da='smoothShaded')
+                break
+
+        #- blast
+        vide_name = '{0}.mov'.format(os.path.splitext(file_name)[0])
+        playblast(vide_name, view=False)
