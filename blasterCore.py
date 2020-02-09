@@ -117,45 +117,32 @@ def batch_playblast(path):
             f_type = 'mayaBinary'
 
         else:
-            return False
+            continue
 
         mc.file(filePath, typ=f_type, o=True, f=True, prompt=False, ignoreVersion=True)
 
-        #- checking file name
-        file_name = mc.file(q=True, sn=True)
-        if not file_name:
-            continue
 
         #- checking lost reference files
-        reference_load_stat = True
-        for ref in mc.file(q=True, r=True):
-            ref_stat = mc.referenceQuery(ref, il=True)
-
-            if not ref_stat and not os.path.isfile(ref.split('{')[0]):
-                reference_load_stat = False
-                break
-    
-        if not reference_load_stat:
+        unload_refs = [ref for ref in mc.file(q=True, r=True) if not mc.referenceQuery(ref, il=True)]
+        lost_refs   = [ref for ref in unload_refs if not os.path.isfile(ref.split('{')[0])]
+        if lost_refs:
             continue
 
         #- checking cameras
-        cameras = [cam for cam in mc.listRelatives(mc.ls(cameras=True), p=True) if re.match('Ep', cam, re.I)]
-        if cameras:
-            blast_cam = cameras[0]
-        else:
-            blast_cam = 'persp'
+        cameras = [cam for cam in mc.listRelatives(mc.ls(cameras=True), p=True) or list()]
+        cameras = [cam for cam in cameras if re.match('Ep', cam, re.I)]
+        cameras.append('persp')
 
         #- set panels
         panels = mc.getPanel(vis=True)
         for pan in panels:
             if pan in mc.getPanel(typ='modelPanel'):
-                mc.modelEditor(pan, e=True, cam=blast_cam)
                 mc.modelEditor(pan, e=True, alo=False)
-                mc.modelEditor(pan, e=True, pm=True)
-                mc.modelEditor(pan, e=True, av=True)
-                mc.modelEditor(pan, e=True, da='smoothShaded')
+                mc.modelEditor(pan, e=True, cam=cameras[0], pm=True, av=True, da='smoothShaded')
                 break
 
         #- blast
-        vide_name = '{0}.mov'.format(os.path.splitext(file_name)[0])
+        vide_name = '{0}.mov'.format(os.path.splitext(filePath)[0])
         playblast(vide_name, view=False)
+
+    return True
