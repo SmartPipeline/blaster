@@ -28,10 +28,10 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- get time range
     if start_frame is None:
-        start_frame = mc.playbackOptions(q=True, ast=True)
+        start_frame = max(mc.playbackOptions(q=True, ast=True), 1)
 
     if end_frame is None:
-        end_frame = mc.playbackOptions(q=True, aet=True)
+        end_frame = max(mc.playbackOptions(q=True, aet=True), 2)
 
     #- playblast images
     BLAST_PREFIX  = os.path.join(image_dir, '{0}_{1}'.format(time.strftime("%b%d%H%M%S", time.localtime()), uuid.uuid4().hex[::4].upper()))
@@ -120,7 +120,7 @@ def batch_playblast(path, pattern):
 
         mc.file(filePath, typ=f_type, o=True, f=True, prompt=False, ignoreVersion=True)
 
-
+        mc.refresh()
         #- checking lost reference files
         unload_refs = [ref for ref in mc.file(q=True, r=True) if not mc.referenceQuery(ref, il=True)]
         lost_refs   = [ref for ref in unload_refs if not os.path.isfile(ref.split('{')[0])]
