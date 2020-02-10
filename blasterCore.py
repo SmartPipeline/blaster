@@ -111,16 +111,13 @@ def batch_playblast(path, pattern):
         #- open file
         if re.search('\.ma$', filePath):
             f_type = 'mayaAscii'
-
         elif re.search('\.mb$', filePath):
             f_type = 'mayaBinary'
-
         else:
             continue
 
         mc.file(filePath, typ=f_type, o=True, f=True, prompt=False, ignoreVersion=True)
 
-        mc.refresh()
         #- checking lost reference files
         unload_refs = [ref for ref in mc.file(q=True, r=True) if not mc.referenceQuery(ref, il=True)]
         lost_refs   = [ref for ref in unload_refs if not os.path.isfile(ref.split('{')[0])]
