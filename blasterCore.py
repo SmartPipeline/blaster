@@ -4,7 +4,7 @@
 #      mail: zclongpop123@163.com
 #      time: Fri Apr 12 13:41:08 2019
 #========================================
-import os, re, time, math, uuid, glob, json, yaml
+import os, re, time, math, uuid, glob, json, yaml, fnmatch
 import getpass, tempfile, subprocess
 import maya.cmds as mc
 import maya.mel as mel
@@ -81,7 +81,6 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
     #- call comp process
     comp_process_cmds  = [config['processor'].format(this_dir), 'comp_blast_video', info_file]
-    print comp_process_cmds
     subprocess.check_call(' '.join(comp_process_cmds).encode('utf-8'))
 
     #- auto delete images
@@ -104,10 +103,10 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
 
 
 
-def batch_playblast(path):
+def batch_playblast(path, pattern):
     '''
     '''
-    for filePath in glob.glob('{0}/*.mb'.format(path)):
+    for filePath in glob.glob('{0}/*.m[ab]'.format(path)):
 
         #- open file
         if re.search('\.ma$', filePath):
@@ -130,7 +129,7 @@ def batch_playblast(path):
 
         #- checking cameras
         cameras = [cam for cam in mc.listRelatives(mc.ls(cameras=True), p=True) or list()]
-        cameras = [cam for cam in cameras if re.match('Ep', cam, re.I)]
+        cameras = [cam for cam in cameras if fnmatch.fnmatchcase(cam, pattern)]
         cameras.append('persp')
 
         #- set panels
