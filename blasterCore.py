@@ -61,10 +61,8 @@ def playblast(output, start_frame=None, end_frame=None, artist=None, view=True):
     focal  = mc.getAttr('{0}.focalLength'.format(camera))
     if not artist:
         artist = getpass.getuser()
-    sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
-    sound_file = 'audio.wav'
-    if sound_node:
-        sound_file = mc.sound(sound_node, q=True, f=True)
+
+    sound_file = blasterUtil.get_current_audio(start_frame)
 
     #- create job-file
     info_data = {

@@ -5,6 +5,7 @@
 #========================================
 import os, re, string
 import maya.cmds as mc
+import maya.mel as mel
 import maya.OpenMaya as OpenMaya
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 def get_current_camera():
@@ -35,6 +36,26 @@ def get_current_camera():
                 break
 
     return camera
+
+
+
+
+def get_current_audio(start_frame=1):
+    '''
+    '''
+    sound_file = 'audio.wav'
+    if OpenMaya.MGlobal.mayaState() == OpenMaya.MGlobal.kInteractive:
+        sound_node = mc.timeControl(mel.eval('string $temp = $gPlayBackSlider'), q=True, s=True)
+        if sound_node:
+            sound_file = mc.sound(sound_node, q=True, f=True)
+
+    else:
+        audios = mc.ls(typ='audio')
+        for audio in audios:
+            if mc.getAttr('{0}.offset'.format(audio)) == start_frame:
+                sound_file = mc.getAttr('{0}.filename'.format(audio))
+    return sound_file
+
 
 
 
