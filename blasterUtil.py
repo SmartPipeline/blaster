@@ -5,24 +5,34 @@
 #========================================
 import os, re, string
 import maya.cmds as mc
+import maya.OpenMaya as OpenMaya
 #--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 def get_current_camera():
     '''
     '''
     camera = 'persp'
 
-    panels = mc.getPanel(vis=True)
-    for panel in panels:
-        if panel not in mc.getPanel(typ='modelPanel'):
-            continue
+    if OpenMaya.MGlobal.mayaState() == OpenMaya.MGlobal.kInteractive:
+        panels = mc.getPanel(vis=True)
+        for pan in panels:
+            if pan not in mc.getPanel(typ='modelPanel'):
+                continue
 
-        cam = mc.modelPanel(panel, q=True, cam=True)
-        if mc.nodeType(cam) != 'transform':
-            cam = mc.listRelatives(cam, p=True)[0]
+            cam = mc.modelPanel(pan, q=True, cam=True)
+            if mc.nodeType(cam) != 'transform':
+                cam = mc.listRelatives(cam, p=True)[0]
 
-        if cam not in ('persp', 'top', 'front', 'side'):
-            camera = cam
-            break
+            if cam not in ('persp', 'top', 'front', 'side'):
+                camera = cam
+                mc.modelEditor(pan, e=True, alo=False)
+                mc.modelEditor(pan, e=True, pm=True, av=True, da='smoothShaded')                
+                break
+
+    else:
+        for cam in mc.listRelatives(mc.ls(cameras=True), p=True):
+            if mc.getAttr('{0}.renderable'.format(cam)):
+                camera = cam
+                break
 
     return camera
 
