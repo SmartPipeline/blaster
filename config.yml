@@ -8,10 +8,12 @@ fps: 24
 
 codec: libx264
 
-processor: '{0}/processor.exe'
+#processor: '{0}/processor.exe'
 
-motd:  '{0}/resource/motd/girl
-'
+processor: 'C:/Python27/python.exe {0}/processor.py'
+
+
+motd:  '{0}/resource/motd/girl'
 
 
 image_dir: '{0}/playblast'
@@ -48,7 +50,7 @@ text:
     - 
         - size: 25
           font: '{0}/resource/font/MONACO.TTF'
-          text: 'Date: {date} UTC+08:00'
+          text: 'Date: {date} {time} UTC+08:00'
           color: [255, 255, 255]
           
         - size: 25
